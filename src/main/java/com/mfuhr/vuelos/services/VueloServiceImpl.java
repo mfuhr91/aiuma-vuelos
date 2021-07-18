@@ -2,7 +2,11 @@ package com.mfuhr.vuelos.services;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -22,17 +26,22 @@ import com.mfuhr.vuelos.models.repos.VueloRepository;
 import com.mfuhr.vuelos.utils.Aviso;
 import com.mfuhr.vuelos.utils.Celda;
 import com.mfuhr.vuelos.utils.Dia;
+import com.mfuhr.vuelos.utils.Mes;
 import com.mfuhr.vuelos.utils.TipoVuelo;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class VueloServiceImpl implements VueloService {
+
+    private final Logger log = LoggerFactory.getLogger(VueloServiceImpl.class);
 
     @Autowired
     private VueloRepository vueloRepo;
@@ -50,30 +59,30 @@ public class VueloServiceImpl implements VueloService {
 
         XSSFWorkbook workbook = new XSSFWorkbook((file.getInputStream()));
         XSSFSheet worksheet = workbook.getSheetAt(0);
-
+        // Row row = worksheet.getRow(0);
         for (Row row : worksheet) {
             VueloImportado vueloImportado = new VueloImportado();
 
-            if (row.getPhysicalNumberOfCells() < 15) {
+            if (row.getPhysicalNumberOfCells() < 15)
                 continue;
-            }
 
-            if (row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().toLowerCase().equals("ush")
-                    || row.getCell(Celda.DESTINO.getNro()).getStringCellValue().toLowerCase().equals("ush")) {
+            if (row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")
+                    || row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")) {
 
                 List<Dia> diaList = new ArrayList<Dia>();
 
-                vueloImportado.setNroVuelo(row.getCell(Celda.NRO_VUELO.getNro()).getStringCellValue());
+                vueloImportado.setNroVuelo(row.getCell(Celda.NRO_VUELO.getNro()).getStringCellValue().trim());
 
-                for (TipoVuelo tipoVuelo : TipoVuelo.values()) {
-                    if (tipoVuelo.name().equals(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue())) {
-                        vueloImportado.setTipoVuelo(tipoVuelo);
-                    }
-                }
-
+                TipoVuelo tipoVuelo = Arrays.stream(TipoVuelo.values())
+                                            .filter( tipo -> tipo.name().toLowerCase().equals(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue().trim().toLowerCase()))
+                                            .findFirst()
+                                            .get();
+                                            
+                vueloImportado.setTipoVuelo(tipoVuelo);
+                
                 int i = 6;
                 for (Dia dia : Dia.values()) {
-                    if (row.getCell(i).getStringCellValue().equals("X")) {
+                    if (row.getCell(i).getStringCellValue().trim().toLowerCase().equals("x")) {
                         diaList.add(dia);
                     } else {
                         diaList.add(null);
@@ -83,12 +92,19 @@ public class VueloServiceImpl implements VueloService {
                 if (diaList.size() > 0) {
                     vueloImportado.setDias(diaList);
                 }
+                try {
+                    vueloImportado.setFechaDesde(row.getCell(Celda.FECHA_DESDE.getNro()).getDateCellValue());
+                    vueloImportado.setFechaHasta(row.getCell(Celda.FECHA_HASTA.getNro()).getDateCellValue());
+                } catch (Exception e) {
+                    Date fechaDesde = parsearStringFecha(row.getCell(Celda.FECHA_DESDE.getNro()).getStringCellValue());
+                    Date fechaHasta = parsearStringFecha(row.getCell(Celda.FECHA_HASTA.getNro()).getStringCellValue());
+                    vueloImportado.setFechaDesde(fechaDesde);
+                    vueloImportado.setFechaHasta(fechaHasta);
+                }
 
-                vueloImportado.setFechaDesde(row.getCell(Celda.FECHA_DESDE.getNro()).getDateCellValue());
-                vueloImportado.setFechaHasta(row.getCell(Celda.FECHA_HASTA.getNro()).getDateCellValue());
-                vueloImportado.setOrigen(row.getCell(Celda.ORIGEN.getNro()).getStringCellValue());
+                vueloImportado.setOrigen(row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim());
                 vueloImportado.setHoraSalida(row.getCell(Celda.STD.getNro()).getDateCellValue());
-                vueloImportado.setDestino(row.getCell(Celda.DESTINO.getNro()).getStringCellValue());
+                vueloImportado.setDestino(row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim());
                 vueloImportado.setHoraArribo(row.getCell(Celda.STA.getNro()).getDateCellValue());
 
                 vueloImportadoList.add(vueloImportado);
@@ -96,6 +112,29 @@ public class VueloServiceImpl implements VueloService {
         }
         workbook.close();
         return vueloImportadoList;
+    }
+
+    private Date parsearStringFecha(String fechaString) {
+        String dia = "";
+        String mes = "";
+        String anio = "";
+
+        dia = fechaString.substring(0, 2);
+        mes = fechaString.substring(2, 5);
+        anio = fechaString.substring(5, 9);
+
+        Mes mesEnum = Mes.getMesByCod(mes);
+
+        fechaString = dia.concat("-").concat(mesEnum.getNro()).concat("-").concat(anio);
+
+        Date fecha = new Date();
+        try {
+            fecha = new SimpleDateFormat("dd-MM-yyyy").parse(fechaString);
+            return fecha;
+        } catch (ParseException e) {
+            log.error("No se pudo parsear la fecha del vuelo", e);
+        }
+        return null;
     }
 
     @Override
@@ -206,68 +245,70 @@ public class VueloServiceImpl implements VueloService {
         primerDiaMes.set(Calendar.HOUR_OF_DAY, 0);
         primerDiaMes.set(Calendar.MINUTE, 0);
         primerDiaMes.set(Calendar.SECOND, 0);
-        primerDiaMes.set(Calendar.MILLISECOND,0);
+        primerDiaMes.set(Calendar.MILLISECOND, 0);
 
         ultimoDiaMes.add(Calendar.MONTH, 0);
         ultimoDiaMes.set(Calendar.DAY_OF_MONTH, ultimoDiaMes.getActualMaximum(Calendar.DAY_OF_MONTH));
         ultimoDiaMes.set(Calendar.HOUR_OF_DAY, 23);
         ultimoDiaMes.set(Calendar.MINUTE, 0);
         ultimoDiaMes.set(Calendar.SECOND, 0);
-        ultimoDiaMes.set(Calendar.MILLISECOND,0);
+        ultimoDiaMes.set(Calendar.MILLISECOND, 0);
 
         List<Date> diasDelMes = new ArrayList<>();
-        while(primerDiaMes.before(ultimoDiaMes) || primerDiaMes.equals(ultimoDiaMes)){
+        while (primerDiaMes.before(ultimoDiaMes) || primerDiaMes.equals(ultimoDiaMes)) {
             diasDelMes.add(primerDiaMes.getTime());
             System.out.println(primerDiaMes.getTime());
             primerDiaMes.add(Calendar.DAY_OF_MONTH, 1);
-            
+
         }
-        
+
         List<Aviso> avisos = new ArrayList<>();
         for (Date dia : diasDelMes) {
-            List<Vuelo> vuelosDelDia = vuelos.stream().filter(vuelo -> dia.equals(vuelo.getFecha())).collect(Collectors.toList());
+            List<Vuelo> vuelosDelDia = vuelos.stream().filter(vuelo -> dia.equals(vuelo.getFecha()))
+                    .collect(Collectors.toList());
             List<Vuelo> vuelosDelDiaComp = vuelosDelDia;
             List<Vuelo> vuelosSolapados = new ArrayList<>();
             int cantidadSolapados = 1;
-            primerBucle:
-            for (Vuelo vuelo : vuelosDelDia){
-                for(Vuelo vueloComp : vuelosDelDiaComp){
-                    
-                    if(vuelo.getNroVuelo().equals(vueloComp.getNroVuelo())){
-                        
+            primerBucle: for (Vuelo vuelo : vuelosDelDia) {
+                for (Vuelo vueloComp : vuelosDelDiaComp) {
+
+                    if (vuelo.getNroVuelo().equals(vueloComp.getNroVuelo())) {
+
                         continue;
                     }
-                    boolean estaSolapado = vuelosSolapados.stream().anyMatch(vueloSol -> vuelo.getNroVuelo().equals(vueloSol.getNroVuelo()));
+                    boolean estaSolapado = vuelosSolapados.stream()
+                            .anyMatch(vueloSol -> vuelo.getNroVuelo().equals(vueloSol.getNroVuelo()));
 
-                    if(estaSolapado) continue primerBucle;
+                    if (estaSolapado)
+                        continue primerBucle;
 
                     Calendar horaPosterior = Calendar.getInstance();
                     horaPosterior.setTime(vuelo.getHoraArribo());
                     horaPosterior.add(Calendar.HOUR_OF_DAY, 1);
                     horaPosterior.set(Calendar.SECOND, 0);
-                    horaPosterior.set(Calendar.MILLISECOND,0);
+                    horaPosterior.set(Calendar.MILLISECOND, 0);
                     if ((vueloComp.getHoraArribo().after(vuelo.getHoraArribo())
-                        || vueloComp.getHoraArribo().equals(vuelo.getHoraArribo()))
-                        && (vueloComp.getHoraArribo().before(horaPosterior.getTime())
-                        || vueloComp.getHoraArribo().equals(horaPosterior.getTime()))) {
-                                        
-                        cantidadSolapados ++;                
+                            || vueloComp.getHoraArribo().equals(vuelo.getHoraArribo()))
+                            && (vueloComp.getHoraArribo().before(horaPosterior.getTime())
+                                    || vueloComp.getHoraArribo().equals(horaPosterior.getTime()))) {
+
+                        cantidadSolapados++;
                         vuelosSolapados.add(vueloComp);
-                        
+
                     }
                 }
             }
 
-            if(cantidadSolapados > 2){
+            if (cantidadSolapados > 2) {
 
                 Aviso aviso = new Aviso();
                 aviso.setCantidadVuelos(cantidadSolapados);
                 aviso.setFecha(dia);
                 avisos.add(aviso);
-                
+
             }
         }
-        
+
         return avisos.size() > 0 ? avisos : null;
     }
 
@@ -293,7 +334,7 @@ public class VueloServiceImpl implements VueloService {
 
         Date fechaDesde = primerDiaMes.getTime();
         Date fechaHasta = ultimoDiaMes.getTime();
-        
+
         return this.vueloRepo.buscarArribosDelMes(fechaDesde, fechaHasta);
     }
 
