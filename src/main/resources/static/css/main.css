@@ -1,0 +1,86 @@
+#resultSalidas {
+    margin-top: -16px;
+}
+#tab-arribos:hover, #tab-salidas:hover{
+    cursor: pointer;
+}
+.ui-datepicker-prev:hover,.ui-datepicker-next:hover{
+    cursor: pointer;
+}
+
+td.ui-datepicker-week-end{
+    background-color:#0080ff63; 
+}
+.navbar {
+    height: 40px;
+    font-size: 13px;
+}
+.navbar .navbar-brand{
+    font-size: 14px;
+    line-height: 12px;
+}
+.nav-link{
+    color: #007fff;
+}
+
+.nav-tabs{
+    font-size: 13px;
+}
+
+.ui-datepicker-today>a.ui-state-active{
+    border: 1px solid #003eff !important;
+    background: #007fff !important;
+    color: #fff;
+}
+
+.btn-guardar, .btn-editar, .btn-borrar{
+    padding: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: white;
+}
+.btn-editar{
+    margin-left: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.btn-editar:hover{
+    color: white;
+    background-color: #edb407;
+    border-color: #edb407;
+}
+.datepicker{
+    max-width: 280px;
+    font-size: 13px;
+}
+.datepicker .btn{
+    font-size: 13px !important;
+}
+#result .table{
+    border-left-style: solid;
+    border-left-width: thin;
+    border-right-style: solid;
+    border-right-width: thin;
+    font-size: 12px;
+
+}
+#result .table button{
+    height: 20px;
+    line-height: 17px;
+}
+
+#alert_guardado{
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    padding-top: 10px;
+    padding-right: 20px;
+    height: 40px;
+    font-size: 13px;
+    
+}
+
+#avisos{
+    height: auto;
+    font-size: 13px;
+}

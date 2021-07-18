@@ -1,0 +1,48 @@
+<table class="table table-sm table-stripped table-hovered table-bordered mt-2" th:fragment="excel-table">
+    <thead th:if="${vuelos}">
+        <tr>
+            <!-- <th th:each="columna : ${columnas}" th:text="${columna}"></th> -->
+            <th rowspan="2" class="align-middle text-center" >Nº Vuelo</th>
+            <th rowspan="2" class="align-middle text-center">Tipo de vuelo</th>
+            <th colspan="7" class="align-middle text-center">Días que opera</th>
+            <th rowspan="2" class="align-middle text-center">Desde</th>
+            <th rowspan="2" class="align-middle text-center">Hasta</th>
+            <th rowspan="2" class="align-middle text-center">Origen</th>
+            <th rowspan="2" class="align-middle text-center">STD</th>
+            <th rowspan="2" class="align-middle text-center">Destino</th>
+            <th rowspan="2" class="align-middle text-center">STA</th>
+        </tr>
+        <tr>
+            <th class="align-middle text-center">L</th>
+            <th class="align-middle text-center">M</th>
+            <th class="align-middle text-center">M</th>
+            <th class="align-middle text-center">J</th>
+            <th class="align-middle text-center">V</th>
+            <th class="align-middle text-center">S</th>
+            <th class="align-middle text-center">D</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="vuelo : ${vuelos}">
+            <td class="text-center" th:text="${vuelo.nroVuelo}"></td>
+            <td class="text-center" th:text="${vuelo.tipoVuelo.name}"></td>
+            <span th:each="dia : ${vuelo.dias}">
+                <td class="text-center" th:if="${dia != null}" th:text="${'X'}"></td>
+                <td class="text-center" th:if="${dia == null}" th:text="${''}"></td>
+            </span>
+            <td class="text-center" th:text="${#calendars.format(vuelo.fechaDesde,'dd/MM/yyyy')}"></td>
+            <td class="text-center" th:text="${#calendars.format(vuelo.fechaHasta,'dd/MM/yyyy')}"></td>
+            <td class="text-center" th:if="${vuelo.origen} == 'USH'">
+                <strong  th:text="${vuelo.origen}"></strong>
+            </td>
+            <td class="text-center" th:if="${vuelo.origen} != 'USH'" th:text="${vuelo.origen}"></td>
+            <td class="text-center" th:text="${#calendars.format(vuelo.horaSalida,'HH:mm')}"></td>
+            <td class="text-center" th:if="${vuelo.destino} == 'USH'">
+                <strong  th:text="${vuelo.destino}"></strong>
+            </td>
+            <td class="text-center" th:if="${vuelo.destino} != 'USH'" th:text="${vuelo.destino}"></td>
+            <td class="text-center" th:text="${#calendars.format(vuelo.horaArribo,'HH:mm')}"></td>
+        </tr>
+       
+    </tbody>
+</table>

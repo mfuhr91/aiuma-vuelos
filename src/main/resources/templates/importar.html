@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.thymeleaf.org">
+
+<head th:replace="template :: head"></head>
+
+<body>
+    <header th:replace="template :: header"></header>
+    <div class="container animate__animated animate__fadeIn">
+        <h3>Importar vuelos</h3>
+        <div class="row mt-4">
+            <div class="col float-start">
+                <form th:action="@{/vuelos/guardarImport}" method="post">
+                    <button class="btn btn-primary" th:disabled="${vuelos == null}" type="submit" >Guardar</button>
+                </form>
+            </div>
+            <div class="col">
+                <div class="float-end">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mostrarFormato">
+                        Ver formato
+                    </button>
+                    
+                    <button type="button" class="btn btn-danger" 
+                            th:onclick="|confirmarBorrarUltimoImport()|"
+                            data-bs-toggle="modal" data-bs-target="#borrarImportModal">
+                        Deshacer última importación
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <form enctype="multipart/form-data" th:action="@{/vuelos/upload}" method="post">
+                <div class="input-group mt-2">
+                    <input type="file" name="file" accept=".xls,.xlsx" class="form-control"
+                        placeholder="Recipient's username" aria-label="Recipient's username"
+                        aria-describedby="button-addon2">
+                    <input class="btn btn-outline-secondary" type="submit" value="Importar" id="button-addon2">
+                </div>
+            </form>
+
+        </div>
+
+        <table th:replace="excel-template :: excel-table"></table>
+
+        <form th:action="@{/vuelos/guardarImport}" method="post">
+            <button class="btn btn-primary" th:disabled="${vuelos == null}" type="submit" >Guardar</button>
+        </form>
+    </div>
+
+
+    <div class="modal fade" id="mostrarFormato" tabindex="-1" aria-labelledby="mostrarFormato" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ejemplo del formato de la planilla</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img type="image/png" th:src="@{/img/ejemplo.png}" width="100%"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="borrarImportModal" tabindex="-10" aria-labelledby="borrarImportModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4" id="exampleModalLabel">¡Atención!</h5>
+                </div>
+                <div class="modal-body fs-5">
+                    ¿Está seguro que quiere deshacer la última importación?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{/vuelos/borrarUltimoImport}" method="post">
+                        <button id="deshacerBoton" class="btn btn-danger mx-1" type="submit">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
