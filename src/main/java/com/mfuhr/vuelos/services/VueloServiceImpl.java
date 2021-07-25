@@ -1,29 +1,19 @@
 package com.mfuhr.vuelos.services;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.mfuhr.vuelos.models.Aeropuerto;
@@ -51,10 +41,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -94,7 +82,7 @@ public class VueloServiceImpl implements VueloService {
                 List<Dia> diaList = new ArrayList<Dia>();
                 String nroVueloString = row.getCell(Celda.NRO_VUELO.getNro()).getStringCellValue().trim();
                 String aerolinea = nroVueloString.substring(0,2);
-                String nro = nroVueloString.substring(3, nroVueloString.length()).trim();
+                String nro = nroVueloString.substring(2, nroVueloString.length()).trim();
                 
                 nroVueloString = aerolinea.concat(" ").concat(nro);
 
@@ -281,21 +269,12 @@ public class VueloServiceImpl implements VueloService {
                 continue;
             }
             List<Vuelo> vuelosDelDiaComp = vuelosDelDia;
-            
-            //primerBucle: 
+
             for (Vuelo vuelo : vuelosDelDia) {
                 Set<String> vuelosSolapados = new HashSet<>();
 
                 for (Vuelo vueloComp : vuelosDelDiaComp) {        
 
-                    /* boolean esVueloSolapado = vuelosSolapados.stream()
-                                                .anyMatch(vueloSolap -> vueloSolap.getNroVuelo().equalsIgnoreCase(vuelo.getNroVuelo()));
-                    boolean esVueloCompSolapado = vuelosSolapados.stream()
-                                                .anyMatch(vueloSolap -> vueloSolap.getNroVuelo().equalsIgnoreCase(vueloComp.getNroVuelo()));
-
-                    if(esVueloSolapado) continue primerBucle;
-                    if(esVueloCompSolapado) continue; */
-                    
                     if (vuelo.getNroVuelo().equals(vueloComp.getNroVuelo())) {
                         vuelosSolapados.add(vuelo.getNroVuelo());
                         continue;
@@ -374,12 +353,10 @@ public class VueloServiceImpl implements VueloService {
     }
 
     @Override
-    public Model cargarVista(Model model, VueloForm vueloForm) {
+    public Model cargarVista(Model model, VueloForm vueloForm, String tipo) {
 
-        Aeropuerto aero = this.buscarAeropuertoPorCodigo("USH");
-
-        vueloForm.setDestino(aero.getCodigo().concat(" - ".concat(aero.getNombre())));
-        vueloForm.setFecha(LocalDate.now());
+        
+        vueloForm.setFecha(vueloForm.getFecha() != null ? vueloForm.getFecha() : LocalDate.now());
         List<Aeropuerto> aeropuertos = this.buscarAeropuertos();
 
         List<Aerolinea> aerolineas = Arrays.asList(Aerolinea.values());
@@ -395,24 +372,41 @@ public class VueloServiceImpl implements VueloService {
         model.addAttribute("posiciones", posiciones);
         model.addAttribute("aerolineas", aerolineas);
         model.addAttribute("vueloForm", vueloForm);
-        model.addAttribute("titulo", "Agregar arribo");
-        return model;
-    }
 
-    @Override
-    public Model validarHora(Model model, VueloForm vueloForm) {
-        if(vueloForm.getHoraArribo() == null){
-            model = this.cargarVista(model, vueloForm);
-            model.addAttribute("horaError", "Debe indicar la hora de arribo");
-            return model;
+        Aeropuerto aero = this.buscarAeropuertoPorCodigo("USH");
+        if(tipo.equals("arribo")){
+            vueloForm.setDestino(aero.getCodigo().concat(" - ".concat(aero.getNombre())));
+            model.addAttribute("titulo", "Agregar arribo");
+        } else {
+            vueloForm.setOrigen(aero.getCodigo().concat(" - ".concat(aero.getNombre())));
+            model.addAttribute("titulo", "Agregar salida");
         }
         return model;
     }
 
     @Override
-    public Model validarAerolinea(Model model, VueloForm vueloForm) {
+    public Model validarHora(Model model, VueloForm vueloForm, String tipo) {
+
+        if(tipo.equals("arribo")){
+            if(vueloForm.getHoraArribo() == null){
+                model = this.cargarVista(model, vueloForm, tipo);
+                model.addAttribute("horaError", "Debe indicar la hora de arribo");
+                return model;
+            }
+        } else {
+            if(vueloForm.getHoraSalida() == null){
+                model = this.cargarVista(model, vueloForm, tipo);
+                model.addAttribute("horaError", "Debe indicar la hora de salida");
+                return model;
+            }
+        }
+        return model;
+    }
+
+    @Override
+    public Model validarAerolinea(Model model, VueloForm vueloForm, String tipo) {
         if(vueloForm.getAerolinea().equals(Aerolinea.NA.name())){
-            model = this.cargarVista(model, vueloForm);
+            model = this.cargarVista(model, vueloForm, tipo);
             model.addAttribute("aerolineaError", "Debe seleccionar una aerolinea");
             return model;
         }

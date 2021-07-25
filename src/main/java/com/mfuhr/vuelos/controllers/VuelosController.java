@@ -6,28 +6,20 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
-import com.mfuhr.vuelos.models.Aeropuerto;
 import com.mfuhr.vuelos.models.Vuelo;
 import com.mfuhr.vuelos.models.VueloForm;
 import com.mfuhr.vuelos.models.VueloImportado;
 import com.mfuhr.vuelos.services.VueloService;
-import com.mfuhr.vuelos.utils.Aerolinea;
-import com.mfuhr.vuelos.utils.Estado;
 import com.mfuhr.vuelos.utils.Posicion;
 import com.mfuhr.vuelos.utils.Puerta;
 import com.mfuhr.vuelos.utils.TipoVuelo;
-import com.mfuhr.vuelos.utils.Usado;
 
-import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -106,6 +96,7 @@ public class VuelosController {
                 .concat(vuelo.getPos().toString()));
 
         Vuelo vueloEncontrado = this.vueloService.buscarPorId(vuelo.getId());
+
         vueloEncontrado.setPos(vuelo.getPos());
         this.vueloService.guardar(vueloEncontrado);
 
@@ -142,6 +133,7 @@ public class VuelosController {
 
             Collections.sort(vuelosArribos, (v1, v2) -> v1.getHoraArribo().compareTo(v2.getHoraArribo()));
 
+            model.addAttribute("puertas", Puerta.values());
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } else {
@@ -171,6 +163,7 @@ public class VuelosController {
 
             Collections.sort(vuelosSalidas, (v1, v2) -> v1.getHoraSalida().compareTo(v2.getHoraSalida()));
 
+            model.addAttribute("puertas", Puerta.values());
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
         } else {
@@ -187,36 +180,44 @@ public class VuelosController {
         return "redirect:/inicio";
     }
 
-    @GetMapping("/formArribo")
-    public String nuevoVuelo(Model model){
- 
+    @GetMapping("/form/{tipo}") // tipo = arribo/salida
+    public String nuevoVuelo(@PathVariable String tipo, Model model){
+        
         VueloForm vueloForm = new VueloForm();
 
-        model = this.vueloService.cargarVista(model, vueloForm);
-        return "form-arribo";
+        model = this.vueloService.cargarVista(model, vueloForm, tipo);
+        if(tipo.equals("arribo")){
+            return "form-arribo";
+        } else {
+            return "form-salida";
+        }
     }
 
-    @PostMapping("/guardarArribo")
-    public String guardarArribo(Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
+    @PostMapping("/guardar/{tipo}") // tipo = arribo/salida
+    public String guardarArribo(@PathVariable String tipo, Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
 
+        boolean esFormArribo = true;
+        model = this.vueloService.validarAerolinea(model, vueloForm, tipo);
+        model = this.vueloService.validarHora(model, vueloForm, tipo);
 
-        
+        if(!tipo.equals("arribo")){
+            esFormArribo = false;
+        }
 
-        model = this.vueloService.validarAerolinea(model, vueloForm);
-        model = this.vueloService.validarHora(model, vueloForm);
-        
         if(result.hasErrors()){
             System.out.println(result);
-            model = this.vueloService.validarAerolinea(model, vueloForm);
-            model = this.vueloService.validarHora(model, vueloForm);
-            model = this.vueloService.cargarVista(model, vueloForm);
-            return "/form-arribo";
+            model = this.vueloService.validarAerolinea(model, vueloForm, tipo);
+            model = this.vueloService.validarHora(model, vueloForm, tipo);
+            model = this.vueloService.cargarVista(model, vueloForm, tipo);
+            return esFormArribo ? "/form-arribo" : "/form-salida";
         }
         if(model.containsAttribute("aerolineaError")){
-            return "/form-arribo";
+            return esFormArribo ? "/form-arribo" : "/form-salida";
+            
         }
         if(model.containsAttribute("horaError")){
-            return "/form-arribo";
+            return esFormArribo ? "/form-arribo" : "/form-salida";
+            
         }
         
         vueloForm.setNroVuelo(vueloForm.getAerolinea().concat(" ").concat(vueloForm.getNroVuelo()));
@@ -231,9 +232,17 @@ public class VuelosController {
         
         vuelo.setFecha(vueloForm.getFecha());
         vuelo.setNroVuelo(vueloForm.getNroVuelo());
-        vuelo.setOrigen(vueloForm.getOrigen());
-        vuelo.setDestino("USH");
-        vuelo.setHoraArribo(vueloForm.getHoraArribo());
+
+        if(esFormArribo){
+            vuelo.setOrigen(vueloForm.getOrigen());
+            vuelo.setDestino("USH");
+            vuelo.setHoraArribo(vueloForm.getHoraArribo());         
+        } else {
+            // es form salida
+            vuelo.setOrigen("USH");
+            vuelo.setDestino(vueloForm.getDestino());
+            vuelo.setHoraSalida(vueloForm.getHoraSalida());
+        }
         vuelo.setEstado(vueloForm.getEstado());
         vuelo.setPuerta(vueloForm.getPuerta());
         vuelo.setPos(vueloForm.getPos());
@@ -245,29 +254,34 @@ public class VuelosController {
         return "redirect:/inicio";
     }
 
-    @GetMapping("/editarArribo/{id}")
-    public String editarVuelo(@PathVariable Long id, Model model){
+    @GetMapping("/editar/{tipo}/{id}")
+    public String editarVuelo(@PathVariable String tipo, @PathVariable Long id, Model model){
+       
+        
 
         Vuelo vuelo = this.vueloService.buscarPorId(id);
 
         VueloForm vueloForm = new VueloForm();
-        model = this.vueloService.cargarVista(model, vueloForm);
+        model = this.vueloService.cargarVista(model, vueloForm, tipo);
         
         vueloForm.setId(vuelo.getId());
         vueloForm.setOrigen(vuelo.getOrigen());
         vueloForm.setDestino(vuelo.getDestino());
         vueloForm.setFecha(vuelo.getFecha());
         vueloForm.setEstado(vuelo.getEstado());
-        vueloForm.setHoraArribo(vuelo.getHoraArribo());
-        //vueloForm.setHoraSalida(vuelo.getHoraSalida());
         vueloForm.setPos(vuelo.getPos());
         vueloForm.setPuerta(vuelo.getPuerta());
         vueloForm.setAerolinea(vuelo.getNroVuelo().substring(0, 2));
         vueloForm.setNroVuelo(vuelo.getNroVuelo().substring(3, vuelo.getNroVuelo().length()).trim());
-
-
+        
         model.addAttribute("titulo", "Editar vuelo");
-        return "form-arribo";
+        if(tipo.equals("arribo")){
+            vueloForm.setHoraArribo(vuelo.getHoraArribo());
+            return "form-arribo";
+        } else {
+            vueloForm.setHoraSalida(vuelo.getHoraSalida());
+            return "form-salida";
+        }
     }
 
     @GetMapping("/totalDiarios")

@@ -12,7 +12,6 @@ import com.mfuhr.vuelos.models.VueloImportado;
 import com.mfuhr.vuelos.utils.Aviso;
 
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface VueloService {
@@ -37,9 +36,9 @@ public interface VueloService {
 
     public Aeropuerto buscarAeropuertoPorCodigo(String codigo);
 
-    public Model cargarVista(Model model, VueloForm vueloForm);
-    public Model validarHora(Model model, VueloForm vueloForm);
-    public Model validarAerolinea(Model model, VueloForm vueloForm);
+    public Model cargarVista(Model model, VueloForm vueloForm, String tipo);
+    public Model validarHora(Model model, VueloForm vueloForm, String tipo);
+    public Model validarAerolinea(Model model, VueloForm vueloForm, String tipo);
 
     public Integer contarVuelosDiarios(LocalDate fecha);
 

@@ -10,7 +10,7 @@
         <div class="card w-50">
             <h5 class="card-header" th:text="${titulo}"></h5>
             <div class="card-body">
-                 <form id="form-arribo" class="mt-3" th:action="@{/vuelos/guardar/} + ${'arribo'}" th:object="${vueloForm}" method="post">
+                 <form id="form-arribo" class="mt-3" th:action="@{/vuelos/guardar/} + ${'salida'} " th:object="${vueloForm}" method="post">
                      <div class="row">
          
                          <div class="col">
@@ -32,34 +32,34 @@
                                  th:errors="*{nroVuelo}"></small>                    
                              </div>
                              <div class="input-group input-group-sm mb-3">
-                                 <label class="input-group-text" for="origen">Origen</label>
-                                 <select id="origen" class="form-select" th:onchange="|optionSelect(this)|" th:field="*{origen}">
-                                     <option selected value="">Seleccionar un aeropuerto</option>
-                                     <option th:each="aero : ${aeropuertos}" 
-                                     th:value="${aero.codigo}"
-                                     th:text="${aero.codigo} + ' - ' + ${aero.nombre}"
-                                     
-                                     ></option>
-                                     
-                                 </select>
-                                 <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('origen')}"
-                                     th:errors="*{origen}"></small>
-                                 
-                             </div>
-                             <div id="usados" class="col my-3 ps-5">
-         
-                                 <button th:each="usado : ${usados}" 
-                                         th:onclick="|clickBtn(this)|" 
-                                         aria-current="page" 
-                                         th:text="${usado}"
-                                         type="button" 
-                                         class="btn btn-outline-primary btn-sm mx-2">Primary</button>
-                             </div>
-                             <div class="input-group input-group-sm mb-3">
-                                 <span class="input-group-text" >Destino</span>
-                                 <input hidden type="text" class="form-control" th:field="*{destino}">
-                                 <input disabled type="text" class="form-control" th:field="*{destino}">
-                             </div>
+                                <span class="input-group-text" >Origen</span>
+                                <input hidden type="text" class="form-control" th:field="*{origen}">
+                                <input disabled type="text" class="form-control" th:field="*{origen}">
+                            </div>
+                            <div class="input-group input-group-sm mb-3">
+                                <label class="input-group-text" for="origen">Destino</label>
+                                <select id="origen" class="form-select" th:onchange="|optionSelect(this)|" th:field="*{destino}">
+                                    <option selected value="">Seleccionar un aeropuerto</option>
+                                    <option th:each="aero : ${aeropuertos}" 
+                                    th:value="${aero.codigo}"
+                                    th:text="${aero.codigo} + ' - ' + ${aero.nombre}"
+                                    
+                                    ></option>
+                                    
+                                </select>
+                                <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('destino')}"
+                                    th:errors="*{destino}"></small>
+                                
+                            </div>
+                            <div id="usados" class="col my-3 ps-5">
+        
+                                <button th:each="usado : ${usados}" 
+                                        th:onclick="|clickBtn(this)|" 
+                                        aria-current="page" 
+                                        th:text="${usado}"
+                                        type="button" 
+                                        class="btn btn-outline-primary btn-sm mx-2">Primary</button>
+                            </div>
                              <div class="input-group input-group-sm mb-3">
                                  <span class="input-group-text">Fecha</span>
                                  <input type="date" class="form-control" th:field="*{fecha}">
@@ -68,7 +68,7 @@
                              </div>
                              <div class="input-group input-group-sm mb-3">
                                  <span class="input-group-text" >Hora</span>
-                                 <input type="time" class="form-control" th:field="*{horaArribo}">
+                                 <input type="time" class="form-control" th:field="*{horaSalida}">
                                      <small class="form-text text-danger ms-2" th:if="${horaError}"
                                  th:text="${horaError}"></small>
                              </div>
@@ -96,7 +96,7 @@
          
                          </div>
                      </div>
-                     <button type="submit" class="btn btn-success">Guardar arribo</button>
+                     <button type="submit" class="btn btn-success">Guardar salida</button>
                  </form>
             </div>
           </div>

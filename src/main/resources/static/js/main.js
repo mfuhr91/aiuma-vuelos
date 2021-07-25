@@ -106,9 +106,8 @@ function guardarVuelo(id, nroVuelo, idBoton) {
 
     idBoton = $(document.getElementById(idBoton));
     let pos = idBoton.closest('td').prev('td').children().val();
-    console.log(id);
-    console.log(nroVuelo);
-    console.log(pos);
+    
+    pos = pos == '' ? 0 : pos;
     let vuelo = {
                     id: id,
                     nroVuelo: nroVuelo,

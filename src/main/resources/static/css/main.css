@@ -1,6 +1,3 @@
-#resultSalidas {
-    margin-top: -16px;
-}
 #tab-arribos:hover, #tab-salidas:hover{
     cursor: pointer;
 }
@@ -91,7 +88,7 @@ td.ui-datepicker-week-end{
 }
 
 .form-control, .form-select {
-    min-width: 200px !important;
+    min-width: 400px !important;
 }
 .botones{
     padding: 0px;
