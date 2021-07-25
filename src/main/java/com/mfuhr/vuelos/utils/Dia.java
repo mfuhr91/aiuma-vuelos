@@ -1,5 +1,10 @@
 package com.mfuhr.vuelos.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Dia {
     
     LUNES(1,"LUNES"),
@@ -13,16 +18,4 @@ public enum Dia {
     private Integer nro;
     private String valor;
 
-    Dia(Integer nro, String valor){
-        this.nro = nro;
-        this.valor = valor;
-    }
-
-    public Integer getNro() {
-        return nro;
-    }
-
-    public String getValor() {
-        return valor;
-    }
 }

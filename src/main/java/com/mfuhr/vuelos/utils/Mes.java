@@ -2,6 +2,11 @@ package com.mfuhr.vuelos.utils;
 
 import java.util.Arrays;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Mes {
     
     ENE("01","Enero","JAN"),
@@ -21,25 +26,6 @@ public enum Mes {
     private String nro;
     private String nombreMes;
     private String codMes;
-
-    Mes(String nro, String nombreMes,String codMes){
-        this.nro = nro;
-        this.nombreMes = nombreMes;
-        this.codMes = codMes;
-    }
-
-
-    public String getNro() {
-        return nro;
-    }
-
-    public String getNombreMes() {
-        return nombreMes;
-    }
-
-    public String getCodMes() {
-        return codMes;
-    }
     
     public static Mes getMesByEnum(String valor){
         return Arrays.stream(Mes.values()).filter( mesEncontrado -> mesEncontrado.name().equals(valor)).findFirst().get();

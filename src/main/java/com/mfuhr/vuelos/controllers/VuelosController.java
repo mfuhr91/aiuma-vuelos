@@ -3,16 +3,31 @@ package com.mfuhr.vuelos.controllers;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.validation.Valid;
+
+import com.mfuhr.vuelos.models.Aeropuerto;
 import com.mfuhr.vuelos.models.Vuelo;
+import com.mfuhr.vuelos.models.VueloForm;
 import com.mfuhr.vuelos.models.VueloImportado;
 import com.mfuhr.vuelos.services.VueloService;
+import com.mfuhr.vuelos.utils.Aerolinea;
+import com.mfuhr.vuelos.utils.Estado;
 import com.mfuhr.vuelos.utils.Posicion;
+import com.mfuhr.vuelos.utils.Puerta;
+import com.mfuhr.vuelos.utils.TipoVuelo;
+import com.mfuhr.vuelos.utils.Usado;
 
+import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +35,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -168,11 +187,98 @@ public class VuelosController {
         return "redirect:/inicio";
     }
 
-    @GetMapping("/nuevo")
+    @GetMapping("/formArribo")
     public String nuevoVuelo(Model model){
+ 
+        VueloForm vueloForm = new VueloForm();
 
-        return "form-vuelo";
+        model = this.vueloService.cargarVista(model, vueloForm);
+        return "form-arribo";
     }
 
+    @PostMapping("/guardarArribo")
+    public String guardarArribo(Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
+
+
+        
+
+        model = this.vueloService.validarAerolinea(model, vueloForm);
+        model = this.vueloService.validarHora(model, vueloForm);
+        
+        if(result.hasErrors()){
+            System.out.println(result);
+            model = this.vueloService.validarAerolinea(model, vueloForm);
+            model = this.vueloService.validarHora(model, vueloForm);
+            model = this.vueloService.cargarVista(model, vueloForm);
+            return "/form-arribo";
+        }
+        if(model.containsAttribute("aerolineaError")){
+            return "/form-arribo";
+        }
+        if(model.containsAttribute("horaError")){
+            return "/form-arribo";
+        }
+        
+        vueloForm.setNroVuelo(vueloForm.getAerolinea().concat(" ").concat(vueloForm.getNroVuelo()));
+        
+        Vuelo vuelo = new Vuelo();
+        if(vueloForm.getId() != null){
+            vuelo = this.vueloService.buscarPorId(vueloForm.getId());
+        }
+        if(vueloForm.getAerolinea().equals(TipoVuelo.PRIVADO.getCod())){
+            vuelo.setTipoVuelo(TipoVuelo.PRIVADO);
+        }
+        
+        vuelo.setFecha(vueloForm.getFecha());
+        vuelo.setNroVuelo(vueloForm.getNroVuelo());
+        vuelo.setOrigen(vueloForm.getOrigen());
+        vuelo.setDestino("USH");
+        vuelo.setHoraArribo(vueloForm.getHoraArribo());
+        vuelo.setEstado(vueloForm.getEstado());
+        vuelo.setPuerta(vueloForm.getPuerta());
+        vuelo.setPos(vueloForm.getPos());
+
+        this.vueloService.guardar(vuelo);
+
+        flash.addFlashAttribute("msj"," Vuelo guardado con éxito!").addFlashAttribute("clase","success");
+
+        return "redirect:/inicio";
+    }
+
+    @GetMapping("/editarArribo/{id}")
+    public String editarVuelo(@PathVariable Long id, Model model){
+
+        Vuelo vuelo = this.vueloService.buscarPorId(id);
+
+        VueloForm vueloForm = new VueloForm();
+        model = this.vueloService.cargarVista(model, vueloForm);
+        
+        vueloForm.setId(vuelo.getId());
+        vueloForm.setOrigen(vuelo.getOrigen());
+        vueloForm.setDestino(vuelo.getDestino());
+        vueloForm.setFecha(vuelo.getFecha());
+        vueloForm.setEstado(vuelo.getEstado());
+        vueloForm.setHoraArribo(vuelo.getHoraArribo());
+        //vueloForm.setHoraSalida(vuelo.getHoraSalida());
+        vueloForm.setPos(vuelo.getPos());
+        vueloForm.setPuerta(vuelo.getPuerta());
+        vueloForm.setAerolinea(vuelo.getNroVuelo().substring(0, 2));
+        vueloForm.setNroVuelo(vuelo.getNroVuelo().substring(3, vuelo.getNroVuelo().length()).trim());
+
+
+        model.addAttribute("titulo", "Editar vuelo");
+        return "form-arribo";
+    }
+
+    @GetMapping("/totalDiarios")
+    public @ResponseBody Integer totalVuelosDiarios(@RequestParam String fechaString){
+
+        LocalDate fecha = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        fecha = LocalDate.parse(fechaString,dtf);
+        Integer total = this.vueloService.contarVuelosDiarios(fecha);
+
+        return total;
+    }
 
 }

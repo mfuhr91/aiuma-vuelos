@@ -1,22 +1,24 @@
 package com.mfuhr.vuelos.models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.mfuhr.vuelos.utils.Estado;
 import com.mfuhr.vuelos.utils.Posicion;
 import com.mfuhr.vuelos.utils.Puerta;
 import com.mfuhr.vuelos.utils.TipoVuelo;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
@@ -30,13 +32,25 @@ public abstract class AbstractVuelo implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Debe indicar un nro de vuelo")
     private String nroVuelo;
     private TipoVuelo tipoVuelo;
-    private Date fecha;
+
+    @NotNull(message = "Debe indicar una fecha")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fecha;
+
+    @NotBlank(message = "Debe seleccionar un origen")
     private String origen;
+
+    @NotBlank(message = "Debe seleccionar un destino")
     private String destino;
-    private Date horaSalida;
-    private Date horaArribo;
+
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime horaSalida;
+
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime horaArribo;
     private Estado estado;
     private Puerta puerta;
     private Posicion pos;

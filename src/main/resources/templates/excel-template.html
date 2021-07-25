@@ -30,18 +30,18 @@
                 <td class="text-center" th:if="${dia != null}" th:text="${'X'}"></td>
                 <td class="text-center" th:if="${dia == null}" th:text="${''}"></td>
             </span>
-            <td class="text-center" th:text="${#calendars.format(vuelo.fechaDesde,'dd/MM/yyyy')}"></td>
-            <td class="text-center" th:text="${#calendars.format(vuelo.fechaHasta,'dd/MM/yyyy')}"></td>
+            <td class="text-center" th:text="${vuelo.fechaDesde}"></td>
+            <td class="text-center" th:text="${vuelo.fechaHasta}"></td>
             <td class="text-center" th:if="${vuelo.origen} == 'USH'">
                 <strong  th:text="${vuelo.origen}"></strong>
             </td>
             <td class="text-center" th:if="${vuelo.origen} != 'USH'" th:text="${vuelo.origen}"></td>
-            <td class="text-center" th:text="${#calendars.format(vuelo.horaSalida,'HH:mm')}"></td>
+            <td class="text-center" th:text="${vuelo.horaSalida}"></td>
             <td class="text-center" th:if="${vuelo.destino} == 'USH'">
                 <strong  th:text="${vuelo.destino}"></strong>
             </td>
             <td class="text-center" th:if="${vuelo.destino} != 'USH'" th:text="${vuelo.destino}"></td>
-            <td class="text-center" th:text="${#calendars.format(vuelo.horaArribo,'HH:mm')}"></td>
+            <td class="text-center" th:text="${vuelo.horaArribo}"></td>
         </tr>
        
     </tbody>

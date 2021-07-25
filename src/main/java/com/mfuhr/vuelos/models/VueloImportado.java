@@ -1,5 +1,6 @@
 package com.mfuhr.vuelos.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class VueloImportado extends AbstractVuelo{
 
     private List<Dia> dias;
-    private Date fechaDesde;
-    private Date fechaHasta;
+    private LocalDate fechaDesde;
+    private LocalDate fechaHasta;
 
 }

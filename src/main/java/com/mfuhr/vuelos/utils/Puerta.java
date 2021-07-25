@@ -1,8 +1,17 @@
 package com.mfuhr.vuelos.utils;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Puerta {
     
-    NA(""),
+    NA("Seleccionar una puerta"),
     UNO("1"),
     DOS("2"),
     TRES("3"),
@@ -12,12 +21,8 @@ public enum Puerta {
 
     private String nro;
 
-    Puerta(String nro){
-        this.nro = nro;
-    }
-
-    public String getNro(){
-        return this.nro;
+    public static List<Puerta> getPuertas(){
+       return Arrays.stream(Puerta.values()).filter(puerta -> (!puerta.getNro().isBlank())).collect(Collectors.toList());
     }
 
 }

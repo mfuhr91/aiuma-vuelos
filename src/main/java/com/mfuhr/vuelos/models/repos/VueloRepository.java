@@ -1,5 +1,6 @@
 package com.mfuhr.vuelos.models.repos;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,14 +14,16 @@ import org.springframework.data.repository.query.Param;
 
 public interface VueloRepository extends JpaRepository<Vuelo, Long>{
     
-    @Query(value = "SELECT * FROM vuelos_db.vuelos as v WHERE v.fecha = :fecha", nativeQuery = true)
+    @Query(value = "SELECT * FROM vuelos as v WHERE v.fecha = :fecha", nativeQuery = true)
     public List<Vuelo> buscarVuelosPorFecha(@Param("fecha")Date fecha);
 
     public Optional<Vuelo> findById(Long id);
 
     public List<Vuelo> findByImportado(Importado importado);
 
-    @Query(value = "SELECT * FROM vuelos_db.vuelos as v WHERE v.fecha >= :fechaDesde AND v.fecha <= :fechaHasta AND v.destino = 'USH'", nativeQuery = true)
-    public List<Vuelo> buscarArribosDelMes(@Param("fechaDesde") Date fechaDesde, @Param("fechaHasta") Date fechaHasta);
+    @Query(value = "SELECT * FROM vuelos as v WHERE v.fecha >= :fechaDesde AND v.fecha <= :fechaHasta AND v.destino = 'USH'", nativeQuery = true)
+    public List<Vuelo> buscarArribosDelMes(@Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
 
+    @Query(value = "SELECT COUNT(*) FROM vuelos as v WHERE v.destino = 'USH' AND v.fecha = :fecha", nativeQuery = true)
+    public Integer totalVuelos(@Param("fecha") LocalDate fecha);
 }

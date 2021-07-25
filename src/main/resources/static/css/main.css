@@ -69,10 +69,10 @@ td.ui-datepicker-week-end{
     line-height: 17px;
 }
 
-#alert_guardado{
+.alerta-guardado{
     position: absolute;
-    top: 60px;
-    right: 20px;
+    top: 45px;
+    right: 5px;
     padding-top: 10px;
     padding-right: 20px;
     height: 40px;
@@ -83,4 +83,17 @@ td.ui-datepicker-week-end{
 #avisos{
     height: auto;
     font-size: 13px;
+}
+
+#form-arribo .input-group-text {
+    min-width: 100px;
+
+}
+
+.form-control, .form-select {
+    min-width: 200px !important;
+}
+.botones{
+    padding: 0px;
+    margin: 0px;
 }

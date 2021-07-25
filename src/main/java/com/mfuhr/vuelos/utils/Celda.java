@@ -1,6 +1,10 @@
 package com.mfuhr.vuelos.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public enum Celda {
     
     NRO_VUELO(0),
@@ -13,16 +17,4 @@ public enum Celda {
     STA(18);
 
     private Integer nro;
-
-    Celda(Integer nro){
-        this.nro = nro;
-    }
-
-    public Integer getNro() {
-        return nro;
-    }
-
-    public void setNro(Integer nro) {
-        this.nro = nro;
-    }
 }

@@ -5,12 +5,14 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TipoVuelo {
+public enum Usado {
     
-    REGULAR("RG","REGULAR"),
-    ESPECIAL("ES","ESPECIAL"),
-    PRIVADO("PR","PRIVADO");
+    AEP(1,"AEP"),
+    EZE(2,"EZE"),
+    FTE(3,"FTE"),
+    REL(4,"REL"),
+    CRD(5,"CRD");
 
+    private Integer nro;
     private String cod;
-    private String valor;
 }

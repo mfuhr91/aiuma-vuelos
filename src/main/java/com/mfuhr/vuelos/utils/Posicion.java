@@ -1,8 +1,17 @@
 package com.mfuhr.vuelos.utils;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Posicion {
 
-    NA(""),
+    NA("Seleccionar una posición"),
     UNO("1"),
     DOS("2"),
     TRES("3"),
@@ -16,12 +25,8 @@ public enum Posicion {
 
     private String valor;
 
-    Posicion(String valor){
-        this.valor = valor;
-    }
-
-    public String getNro(){
-        return this.valor;
-    }
+    public static List<Posicion> getPosiciones(){
+        return Arrays.stream(Posicion.values()).filter(pos -> (!pos.getValor().isBlank())).collect(Collectors.toList());
+     }
     
 }
