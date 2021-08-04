@@ -1,0 +1,1 @@
+web: java -jar target/aiuma-vuelos-1.0.jar
