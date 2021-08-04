@@ -27,3 +27,5 @@ logging:
         org:
             hibernate:
                 SQL: debug 
+server:
+    port: ${PORT}
