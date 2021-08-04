@@ -12,23 +12,24 @@
   <link rel="stylesheet" th:href="@{/css/fontawesome.all.min.css}">
 
 
-  <link rel="shortcut icon" type="image/webp" th:href="@{/img/logo.webp}" />
+  <link rel="shortcut icon" type="image/webp" th:href="@{/img/flat-plane.png}" />
   <script th:src="@{/bootstrap/js/popper.min.js}"></script>
   <script th:src="@{/js/jquery.min.js}"></script>
   <script th:src="@{/js/jquery-ui.min.js}"></script>
   <script th:src="@{/js/datepicker.js}"></script>
   <script th:src="@{/js/main.js}"></script>
   <script th:src="@{/js/fontawesome.all.min.js}"></script>
+  <script th:src="@{/js/moment.min.js}"></script>
 
   <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
-  <title>Gestión de vuelos</title>
+  <title>AIUMA Vuelos</title>
 </head>
 
 <body>
   <header th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/inicio}">Gestión de vuelos</a>
+        <a class="navbar-brand" th:href="@{/inicio}"> AIUMA Vuelos</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
           aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -42,6 +43,9 @@
               <a class="nav-link" th:href="@{/vuelos}">Importar</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" th:href="@{/vuelos/imprimirProg}">Imprimir prog.</a>
+            </li>
+            <li class="nav-item d-none">
               <a class="nav-link" th:href="@{/vuelos/privados}">Cotizar privados</a>
             </li>
             <li class="nav-item">
@@ -51,47 +55,27 @@
         </div>
       </div>
     </nav>
-    <h1 class="m-5"></h1>
-
     <!-- ALERTAS -->
-    <div class="alert alert-success alert-dismissible fade show mt-1 mx-1 animate__animated animate__headShake" th:if="${successNuevo != null}">
-      <span th:text="${successNuevo}"></span>&nbsp;&nbsp;
-        <a class="btn btn-secondary" th:href="@{'/servicios/imprimir/' + ${servicioId}(format=pdf)}" target="_blank" >
-          <i class="fas fa-print"></i>
-        </a>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    
-    <div class="alert alert-success alert-dismissible fade show mt-1 mx-1 animate__animated animate__headShake" th:if="${success != null}" >
-      <span th:text="${success}"></span>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="alert alert-danger alert-dismissible fade show mt-1 mx-1 animate__animated animate__headShake"  th:if="${error != null && error != 'Forbidden'}"  >
-      <span th:text="${error}"></span>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="alert alert-warning alert-dismissible fade show mt-1 mx-1 animate__animated animate__headShake" th:if="${warning != null}"  >
-      <span th:text="${warning}"></span>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="alert alert-info alert-dismissible fade show mt-1 mx-1 animate__animated animate__headShake" th:if="${info != null}" >
-      <span th:text="${successNuevo}"></span>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
 
-    <div class="alert alert-success alert-dismissible" id="alert_guardado" role="alert">
-      <i class="fas fa-check"></i> Vuelo actualizado con éxito!
+    <div class="alert alert-success alert-dismissible fade show alerta" th:if="${success}" role="alert">
+      <i class="fas fa-check"></i> <span th:text="${success}"></span>
     </div>
+    <div class="alert alert-warning alert-dismissible fade show alerta" th:if="${warning}" role="alert">
+      <i class="fas fa-exclamation-triangle"> </i><span th:text="${warning}"></span>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show alerta" th:if="${error}" role="alert">
+      <i class="fas fa-exclamation-triangle"> </i><span th:text="${error}"></span>
+    </div>
+    <div class="alert alert-success alert-dismissible alerta" id="alert_actualizado" role="alert">
+      <i class="fas fa-check"></i><span> Vuelo actualizado con éxito!</span> 
+    </div>
+    <div class="alert alert-success alert-dismissible alerta" id="alert_borrado" role="alert">
+      <i class="fas fa-check"></i><span> Vuelo eliminado con éxito!</span> 
+    </div>
+   <!--  <div class="alert alert-dismissible alerta fade show" 
+          th:classappend="'alert-' + (${clase != null} ? ${clase} : info)" th:if="${msj != null}" id="alert_guardado" role="alert">
+      <i class="fas fa-check"></i><span th:text="${msj}"></span> 
+    </div> -->
     <!-- FIN ALERTAS -->
   </header>
 

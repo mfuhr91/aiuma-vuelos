@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.thymeleaf.org">
+
+<head th:replace="template :: head"></head>
+
+<body>
+    <header th:replace="template :: header"></header>
+    <div class="main-container container animate__animated animate__fadeIn">
+        <div id="card-programacion" class="card w-50">
+            <h5 class="card-header bg-primary text-light" th:text="${titulo}"></h5>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col">
+                        <div class="input-group input-group-sm mb-3">
+                            <span class="input-group-text">Fecha desde</span>
+                            <input  type="date" 
+                                    class="form-control" 
+                                    id="inputFechaDesde"
+                                    th:onchange="|asignarFechas()|">
+                            <small class="form-text text-danger ms-2" th:if="${errorFechaDesde}">Debe ingresar una
+                                fecha</small>
+                        </div>
+                        <div class="input-group input-group-sm mb-3">
+                            <span class="input-group-text">Fecha hasta</span>
+                            <input  type="date" 
+                                    class="form-control" 
+                                    id="inputFechaHasta"
+                                    th:onchange="|asignarFechas()|">
+                            <small class="form-text text-danger ms-2" th:if="${errorFechaHasta}">Debe ingresar una
+                                fecha</small>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-3 text-end d-none">
+                        <button id="print-xls-disabled" class="btn btn-success" disabled><i class="fas fa-file-download"></i> <span> XLS</span></button>
+                        <a class="btn btn-success"
+                            id="print-xls"
+                            th:href="@{'/vuelos/imprimirProgramacion/xls/' + ${fechaDesde} + '/' + ${fechaHasta}(format=xls)}"
+                            target="_blank">
+                            <i class="fas fa-file-download"></i> <span> XLS</span>
+                        </a>
+                    </div>
+                    <div class="col-3">
+                        <button id="print-pdf-disabled" class="btn btn-danger" disabled><i class="fas fa-print"></i> <span> PDF</span></button>
+                        <a class="btn btn-danger"
+                            id="print-pdf"
+                            target="_blank"
+                            disabled>
+                            <i class="fas fa-print"></i> <span> PDF</span>
+                            
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

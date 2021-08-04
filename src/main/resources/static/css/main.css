@@ -1,6 +1,10 @@
-#resultSalidas {
-    margin-top: -16px;
+body {
+    background-color: rgb(250, 250, 250);
 }
+.main-container{
+    margin-top: 50px;
+}
+
 #tab-arribos:hover, #tab-salidas:hover{
     cursor: pointer;
 }
@@ -69,18 +73,52 @@ td.ui-datepicker-week-end{
     line-height: 17px;
 }
 
-#alert_guardado{
-    position: absolute;
-    top: 60px;
-    right: 20px;
+.alerta{
+    /* position: absolute;
+    top: 45px;
+    right: 5px;
     padding-top: 10px;
     padding-right: 20px;
-    height: 40px;
+     */
+    height: 45px;
     font-size: 13px;
+    line-height: 0px;
+    position:absolute;
+    width: 100%;
+    border-radius: 0px !important;
+    top: 40px;
+    right: 0px;
     
 }
 
 #avisos{
     height: auto;
     font-size: 13px;
+}
+
+#form-arribo .input-group-text, 
+#form-salida .input-group-text,
+#card-programacion .input-group-text{
+    min-width: 100px;
+
+}
+
+.form-control, .form-select {
+    min-width: 400px !important;
+}
+.botones{
+    padding: 0px;
+    margin: 0px;
+}
+
+.tabla-import {
+    width: auto !important;
+}
+
+#form-switch{
+    margin-left: 16px;
+}
+
+#form-switch label {
+    margin-left: 35px;
 }

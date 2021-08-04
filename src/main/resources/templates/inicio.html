@@ -6,7 +6,7 @@
 <body>
     <header th:replace="template :: header"></header>
 
-    <div class="container-fluid animate__animated animate__fadeIn">
+    <div class="main-container container-fluid animate__animated animate__fadeIn">
         <div class="row">
             <aside class="datepicker col ps-5">
                 <div class="row">
@@ -14,16 +14,32 @@
                 </div>
                 <div class="row my-3">
                     <div class="col">
-                        <form th:action="@{/vuelos/nuevo}" method="get">
-                            <button class="btn btn-primary" type="submit" >Agregar vuelo</button>
+                        <form th:action="@{/vuelos/form/} + ${'arribo'}" method="get">
+                            <button class="btn btn-primary" type="submit" > <i class="fas fa-plane-arrival"></i> Agregar arribo</button>
                         </form>
                         
                     </div>
                 </div>
-                <div class="row">
-                    <form th:action="@{/vuelos/nuevoMasivo}" method="get">
-                        <button class="btn btn-success" type="submit" >Agregar masivo</button>
+                <div class="row my-3">
+                    <div class="col">
+                        <form th:action="@{/vuelos/form/} + ${'salida'}" method="get">
+                            <button class="btn btn-primary" type="submit" ><i class="fas fa-plane-departure"></i> Agregar salida</button>
+                        </form>
+                        
+                    </div>
+                </div>
+                <div class="row my-3 d-none">
+                    <form th:action="@{/vuelos/formMasivo} + ${'arribo'}" method="get">
+                        <button class="btn btn-success" type="submit" >Agregar arribo masivo</button>
                     </form>
+                </div>
+                <div class="row my-3 d-none">
+                    <form th:action="@{/vuelos/formMasivo} + ${'salida'}" method="get">
+                        <button class="btn btn-success" type="submit" >Agregar salida masivo</button>
+                    </form>
+                </div>
+                <div class="row my-3">
+                    <strong><span>Vuelos del día: <span id="total-vuelos">0</span></span></strong>
                 </div>
             </aside>
             <section class="col col-6 ps-2">
@@ -42,15 +58,22 @@
                     <div id="resultSalidas">
 
                     </div>
+                    
                 </div>
-                <table class="vuelosArribos table table-sm  table-hovered" th:fragment="home-table">
-                    <thead th:if="${vuelosArribos}">
+                
+
+
+
+                <!-- LAS TABLAS DE CARGAN DINAMICAMENTE Y SE INSERTAN EN id="result" -->
+                <table th:if="${vuelosArribos}" class="vuelosArribos table table-sm  table-hovered" th:fragment="home-table">
+                    <thead >
                         <tr>
                             <th class="align-middle text-center">Aerop.</th>
                             <th class="align-middle text-center">Vuelo</th>
                             <th class="align-middle text-center">Proc.</th>
                             <th class="align-middle text-center">Arribo Est.</th>
                             <th class="align-middle text-center">Estado</th>
+                            <th class="align-middle text-center">Gran Enver.</th>
                             <th class="align-middle text-center">Puerta</th>
                             <th class="align-middle text-center">Pos.</th>
                             <th class="align-middle text-center"></th>
@@ -62,47 +85,77 @@
                             <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
                             <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
                             <td class="text-center align-middle"
-                                th:text="${#calendars.format(vuelo.horaArribo,'HH:mm')}"></td>
+                                th:text="${vuelo.horaArribo}"></td>
                             <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.puerta.nro}"></td>
                             <td class="text-center align-middle">
-                                <select name="posicion">
-                                    <option th:each="pos : ${posiciones}" th:selected="${pos.nro} == ${vuelo.pos.nro}"
-                                        th:value="${pos.nro}" th:text="${pos.nro}"></option>
+                                <div class="form-switch switch-tabla">
+                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
+                                 </div>
+                            </td>
+                            <td class="text-center align-middle">
+                                <select name="puerta">
+                                    <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
+                                    value=""></option>
+                                    <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
+                                        th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
+                                        th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
                                 </select>
                             </td>
                             <td class="text-center align-middle">
-                                <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                    class="btn btn-success btn-guardar">
-                                    <i class="far fa-save fa-sm"></i>
-                                </button>
-                                <button type="button" id="editar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    class="btn btn-warning btn-editar">
-                                    <!-- th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|" -->         
-                                    <i class="fas fa-pencil-alt fa-sm"></i>
-                                </button>
-                                <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                    class="btn btn-danger btn-borrar mx-1">
-                                    <i class="far fa-trash-alt fa-sm"></i>
-                                </button>
+                                <select name="posicion"> 
+                                    <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
+                                        value=""></option>
+                                    <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
+                                            th:selected="${pos.valor} == ${vuelo.pos.valor}"
+                                            th:value="${pos.valor}" th:text="${pos.valor}"></option>
+                                </select>
                             </td>
+                            <td class="text-center align-middle">
+                                <div class="row mx-2">
+                                    <div class="col botones">
+                                        <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
+                                        th:data_nroVuelo="${vuelo.nroVuelo}"
+                                        th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                        class="btn btn-success btn-guardar">
+                                        <i class="far fa-save fa-sm"></i>
+                                    </button>
+                                    </div>
+                                    <div class="col botones">
+                                        <form th:action="@{/vuelos/editar/} + ${'arribo'} + '/' + ${vuelo.id}" method="get">
+                                            <button type="submit"
+                                                class="btn btn-warning btn-editar">
+                                                <i class="fas fa-pencil-alt fa-sm"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col botones">
+                                        <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
+                                        th:data_nroVuelo="${vuelo.nroVuelo}"
+                                        th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                        class="btn btn-danger btn-borrar mx-1">
+                                        <i class="far fa-trash-alt fa-sm"></i>
+                                    </button>
+                                    </div>
+                                </div>
+                               
+                               
+                               
+                            </td>
+                            
                         </tr>
-
+                        
                     </tbody>
+                    
                 </table>
-                <table class="vuelosSalidas table table-sm table-stripped table-hovered" th:fragment="home-table">
-                    <thead th:if="${vuelosSalidas}">
+                <table th:if="${vuelosSalidas}" class="vuelosSalidas table table-sm table-stripped table-hovered" th:fragment="home-table">
+                    <thead>
                         <tr>
                             <th class="align-middle text-center">Aerop.</th>
                             <th class="align-middle text-center">Vuelo</th>
                             <th class="align-middle text-center">Destino.</th>
                             <th class="align-middle text-center">Partida Est.</th>
                             <th class="align-middle text-center">Estado</th>
+                            <th class="align-middle text-center">Gran Enver.</th>
                             <th class="align-middle text-center">Puerta</th>
                             <th class="align-middle text-center">Pos.</th>
                             <th class="align-middle text-center"></th>
@@ -114,43 +167,73 @@
                             <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
                             <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
                             <td class="text-center align-middle"
-                                th:text="${#calendars.format(vuelo.horaSalida,'HH:mm')}"></td>
+                                th:text="${vuelo.horaSalida}"></td>
                             <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.puerta.nro}"></td>
                             <td class="text-center align-middle">
-                                <select name="posicion" id="pos">
-                                    <option th:each="pos : ${posiciones}" th:selected="${pos.nro} == ${vuelo.pos.nro}"
-                                        th:value="${pos.nro}" th:text="${pos.nro}"></option>
+                                <div class="form-switch switch-tabla">
+                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
+                                 </div>
+                            </td>
+                            <td class="text-center align-middle">
+                                <select name="puerta">
+                                    <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
+                                    value=""></option>
+                                    <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
+                                        th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
+                                        th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
                                 </select>
                             </td>
                             <td class="text-center align-middle">
-                                <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                    class="btn btn-success btn-guardar">
-
-                                    <i class="far fa-save"></i>
-                                </button>
-                                <button type="button" id="editar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    class="btn btn-warning btn-editar">
-                                    <!-- th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|" -->
-                                    <i class="fas fa-pencil-alt xs"></i>
-                                </button>
-                                <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
-                                    th:data_nroVuelo="${vuelo.nroVuelo}"
-                                    th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                    class="btn btn-danger btn-borrar mx-1">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
+                                <select name="posicion">
+                                    <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
+                                    value=""></option>
+                                    <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
+                                        th:selected="${pos.valor} == ${vuelo.pos.valor}"
+                                        th:value="${pos.valor}" th:text="${pos.valor}"></option>
+                                </select>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div class="row mx-2">
+                                    <div class="col botones">
+                                        <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
+                                        th:data_nroVuelo="${vuelo.nroVuelo}"
+                                        th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                        class="btn btn-success btn-guardar">
+                                        <i class="far fa-save fa-sm"></i>
+                                    </button>
+                                    </div>
+                                    <div class="col botones">
+                                        <form th:action="@{/vuelos/editar/} + ${'salida'} + '/' + ${vuelo.id}" method="get">
+                                            <button type="submit"
+                                                class="btn btn-warning btn-editar">       
+                                                <i class="fas fa-pencil-alt fa-sm"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col botones">
+                                        <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
+                                        th:data_nroVuelo="${vuelo.nroVuelo}"
+                                        th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                        class="btn btn-danger btn-borrar mx-1">
+                                        <i class="far fa-trash-alt fa-sm"></i>
+                                    </button>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
 
                     </tbody>
                    
                 </table>
+                <!-- LAS TABLAS DE CARGAN DINAMICAMENTE Y SE INSERTAN EN id="result" -->
             </section>
-            <aside class="col col-3 ps-2" id="avisos">
+
+            <aside class="col col-3 ps-2" id="resultAvisos">
+                
+            </aside>
+
+            <aside id="avisos" th:fragment="home-avisos">
+
                 <div th:if="${avisos}"  th:each="aviso : ${avisos}">
                     <div class="alert alert-warning fade show mt-1 mx-1 animate__animated animate__headShake"
                            th:if="${aviso.cantidadVuelos < 4}">
@@ -161,7 +244,7 @@
                             <div class="col ps-3">
                                 <span> ¡Hay <span th:text="${aviso.cantidadVuelos}"></span> vuelos dentro de una misma hora el día </span>
                                 <strong>
-                                    <span th:text="${#calendars.format(aviso.fecha,'dd/MM/yyyy')}"></span>
+                                    <span th:text="${#temporals.format(aviso.fecha,'dd/MM/yyyy')}"></span>
                                 </strong>!                              
                             </div>
                         </div>
@@ -177,7 +260,7 @@
                             <div class="col ps-3">
                                 <span> ¡Hay <span th:text="${aviso.cantidadVuelos}"></span> vuelos dentro de una misma hora el día </span>
                                 <strong>
-                                    <span th:text="${#calendars.format(aviso.fecha,'dd/MM/yyyy')}"></span>
+                                    <span th:text="${#temporals.format(aviso.fecha,'dd/MM/yyyy')}"></span>
                                 </strong>!
                             </div>
                         </div>

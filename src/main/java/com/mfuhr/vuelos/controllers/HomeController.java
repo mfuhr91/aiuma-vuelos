@@ -1,5 +1,10 @@
 package com.mfuhr.vuelos.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 import com.mfuhr.vuelos.models.Vuelo;
@@ -12,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("")
@@ -24,12 +31,24 @@ public class HomeController {
     VueloService vueloService;
     
     @GetMapping({"","/","/home","/index","/inicio"})
-    public String home(Model model){
+    public String home(Model model){    
+
         
-        List<Vuelo> vuelos = this.vueloService.buscarArribosDelMesActual();
-        List<Aviso> avisos = this.vueloService.comprobarVuelos(vuelos);
-        System.out.println("HOMECONTROLLER - TOTAL VUELOS: " + vuelos.size());
-        model.addAttribute("avisos", avisos);
         return "inicio";
     }
+
+    @RequestMapping("/fechaSeleccionada")
+    public String getFecha(Model model, @RequestParam String fechaString){
+        LocalDate fecha = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        fecha = LocalDate.parse(fechaString,dtf);
+        
+        List<Aviso> avisos = this.vueloService.comprobarVuelos(fecha);
+
+        model.addAttribute("avisos", avisos);
+       
+        return "inicio :: home-avisos";
+    }
+
+
 }

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.thymeleaf.org">
+
+<head th:replace="template :: head"></head>
+
+<body>
+    <header th:replace="template :: header"></header>
+    <div class="main-container container animate__animated animate__fadeIn">
+
+        <div class="card w-50">
+            <h5 class="card-header bg-primary text-light" th:text="${titulo}"></h5>
+            <div class="card-body">
+                 <form id="form-salida" class="mt-3" th:action="@{/vuelos/guardar/} + ${'salida'} " th:object="${vueloForm}" method="post">
+                     <div class="row">
+         
+                         <div class="col">
+                             <div class="input-group input-group-sm mb-3">
+                                 <input hidden type="number" class="form-control" th:field="*{id}" th:value="${id}">
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <label class="input-group-text" for="aerolinea">Aerolínea</label>
+                                 <select class="form-select" id="aerolinea" th:field="*{aerolinea}">
+                                     <option th:each="aerolinea : ${aerolineas}" th:value="${aerolinea}" th:text="${aerolinea.cod}"></option>
+                                     
+                                 </select>
+                                 <small class="form-text text-danger ms-2" th:if="${aerolineaError}" th:text="${aerolineaError}"></small>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">                      
+                                 <span class="input-group-text" >Nro. Vuelo</span>
+                                 <input type="number" class="form-control" placeholder="Ejemplo: 1880" th:field="*{nroVuelo}">
+                                 <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('nroVuelo')}"
+                                 th:errors="*{nroVuelo}"></small>                    
+                             </div>
+                             <div class="input-group input-group-sm m-3"> 
+                                <div class="form-check form-switch" id="form-switch">
+                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:field="*{granPorte}">
+                                    <label class="form-check-label" for="switchGranPorte">Vuelo de gran envergadura</label>
+                                </div>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                <span class="input-group-text" >Origen</span>
+                                <input hidden type="text" class="form-control" th:field="*{origen}">
+                                <input disabled type="text" class="form-control" th:field="*{origen}">
+                            </div>
+                            <div class="input-group input-group-sm mb-3">
+                                <label class="input-group-text" for="origen">Destino</label>
+                                <select id="origen" class="form-select" th:onchange="|optionSelect(this)|" th:field="*{destino}">
+                                    <option selected value="">Seleccionar un aeropuerto</option>
+                                    <option th:each="aero : ${aeropuertos}" 
+                                    th:value="${aero.codigo}"
+                                    th:text="${aero.codigo} + ' - ' + ${aero.nombre}"
+                                    
+                                    ></option>
+                                    
+                                </select>
+                                <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('destino')}"
+                                    th:errors="*{destino}"></small>
+                                
+                            </div>
+                            <div id="usados" class="col my-3 ps-5">
+        
+                                <button th:each="usado : ${usados}" 
+                                        th:onclick="|clickBtn(this)|" 
+                                        aria-current="page" 
+                                        th:text="${usado}"
+                                        type="button" 
+                                        class="btn btn-outline-primary btn-sm mx-2">Primary</button>
+                            </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <span class="input-group-text">Fecha</span>
+                                 <input type="date" class="form-control" th:field="*{fecha}">
+                                     <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('fecha')}"
+                                 th:errors="*{fecha}"></small>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <span class="input-group-text" >Hora</span>
+                                 <input type="time" class="form-control" th:field="*{horaSalida}">
+                                     <small class="form-text text-danger ms-2" th:if="${horaError}"
+                                 th:text="${horaError}"></small>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <label class="input-group-text" for="estado">Estado</label>
+                                 <select class="form-select" id="estado" th:field="*{estado}">
+                                   <option th:each="estado : ${estados}" th:value="${estado}" th:text="${estado.valorEs}"></option>
+                                 </select>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <label class="input-group-text" for="puerta">Puerta</label>
+                                 <select class="form-select" id="puerta" th:field="*{puerta}">
+                                     <option th:each="puerta : ${puertas}" th:value="${puerta}" th:text="${puerta.nro}"></option>
+                                    
+         
+                                 </select>
+                             </div>
+                             <div class="input-group input-group-sm mb-3">
+                                 <label class="input-group-text" for="posicion">Posición</label>
+                                 <select class="form-select" id="posicion" th:field="*{pos}">
+                                     <option th:each="posicion : ${posiciones}" th:value="${posicion}" th:text="${posicion.valor}"></option>   
+         
+                                 </select>
+                             </div>
+         
+                         </div>
+                     </div>
+                     <button type="submit" class="btn btn-success">Guardar salida</button>
+                 </form>
+            </div>
+          </div>
+    </div>
+
+
+</body>

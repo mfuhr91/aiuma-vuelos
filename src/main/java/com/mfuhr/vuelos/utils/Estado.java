@@ -1,6 +1,10 @@
 package com.mfuhr.vuelos.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public enum Estado {
  
     EN_HORARIO("En horario","On time"),
@@ -13,16 +17,4 @@ public enum Estado {
     private String valorEs;
     private String valorEn;
 
-    Estado(String valorEs, String valorEn){
-        this.valorEs = valorEs;
-        this.valorEn = valorEn;
-    }
-
-    public String getValorEs(){
-        return this.valorEs;
-    }
-    
-    public String getValorEn(){
-        return this.valorEn;
-    }
 }
