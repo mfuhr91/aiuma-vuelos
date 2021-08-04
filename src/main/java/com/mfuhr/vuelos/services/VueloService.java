@@ -42,4 +42,6 @@ public interface VueloService {
 
     public Integer contarVuelosDiarios(LocalDate fecha);
 
+    public List<Vuelo> buscarEntreFechas(LocalDate fechaDesde, LocalDate fechaHasta);
+
 }

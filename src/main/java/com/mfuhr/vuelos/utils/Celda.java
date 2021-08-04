@@ -9,6 +9,7 @@ public enum Celda {
     
     NRO_VUELO(0),
     TIPO_VUELO(1),
+    EQUIPO(4),
     FECHA_DESDE(13),
     FECHA_HASTA(14),
     ORIGEN(15),

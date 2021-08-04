@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TipoVuelo {
     
+    NA("NA","NA"),
     REGULAR("RG","REGULAR"),
     ESPECIAL("ES","ESPECIAL"),
     PRIVADO("PR","PRIVADO");

@@ -34,5 +34,9 @@ public enum Mes {
     public static Mes getMesByCod(String valor){
         return Arrays.stream(Mes.values()).filter( mesEncontrado -> mesEncontrado.getCodMes().equals(valor)).findFirst().get();
     }
+
+    public static Mes getMesByNro(String nroMes){
+        return Arrays.stream(Mes.values()).filter( mesEncontrado -> mesEncontrado.getNro().equals(nroMes)).findFirst().get();
+    }
     
 }

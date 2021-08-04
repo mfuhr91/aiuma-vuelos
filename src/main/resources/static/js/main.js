@@ -1,6 +1,8 @@
 'use strict';
 
 $(document).ready(() => {
+    $("#print-pdf").hide();
+    $("#print-xls").hide();
     $("#datepicker").change();
    
     $("#alert_actualizado").hide();
@@ -27,9 +29,13 @@ $(document).ready(() => {
         $("#resultSalidas").hide();
     }
 
+    /* window.setTimeout(() => {
+        $(".alerta-guardado").fadeOut();
+    }, 2000); */
     window.setTimeout(() => {
-        $(".alerta-guardadogit s").fadeOut();
-    }, 2000);
+        $(".alerta").fadeOut();
+    }, 2000); 
+
 });
 
 // formulario carga individual
@@ -106,12 +112,15 @@ function guardarVuelo(id, nroVuelo, idBoton) {
 
     idBoton = $(document.getElementById(idBoton));
     let pos = idBoton.closest('td').prev('td').children().val();
-    
+    let fila = idBoton.closest('tr');
+    let columnaGranPorte = fila.find('td:eq(5)');
+    let granPorte = columnaGranPorte.find('input').is(':checked');
     pos = pos == '' ? 0 : pos;
     let vuelo = {
                     id: id,
                     nroVuelo: nroVuelo,
                     pos: pos,
+                    granPorte: granPorte,
                 }
     $.ajax({
         type: "POST",
@@ -124,6 +133,7 @@ function guardarVuelo(id, nroVuelo, idBoton) {
        $("#alert_actualizado").fadeIn();
        
       window.setTimeout(() => { 
+        
          $("#alert_actualizado").fadeOut(); 
       }, 2000); 
     });
@@ -133,5 +143,36 @@ function guardarVuelo(id, nroVuelo, idBoton) {
 
 function confirmarBorrarUltimoImport() {
     $('#borrarImportModal').modal('show');
+}
+
+function asignarFechas(){
+    let botonXLSdisabled= $("#print-xls-disabled");
+    let botonPDFdisabled= $("#print-pdf-disabled");
+    let botonXLS = $("#print-xls")
+    let botonPDF = $("#print-pdf");
+    let fechaDesde = $("#inputFechaDesde").val();
+    let fechaHasta = $("#inputFechaHasta").val();
+    console.log(fechaHasta);
+    if(fechaDesde != "" && fechaHasta == "") {
+        fechaHasta = $("#inputFechaHasta").val($("#inputFechaDesde").val());
+    }
+    if(fechaDesde == "" && fechaHasta != ""){
+        fechaDesde = $("#inputFechaDesde").val($("#inputFechaHasta").val());
+    }
+    if(fechaDesde != "" && fechaHasta != ""){
+        
+        fechaDesde = moment($("#inputFechaDesde").val()).format("DD-MM-YYYY");
+        fechaHasta = moment($("#inputFechaHasta").val()).format("DD-MM-YYYY");
+
+        botonXLSdisabled.hide();
+        botonPDFdisabled.hide();
+        botonXLS.show();
+        botonPDF.show();
+
+        botonXLS.attr("href","/vuelos/imprimirProgramacion/xls/" + fechaDesde + '/' + fechaHasta + "?format=pdf");
+        botonPDF.attr("href","/vuelos/imprimirProgramacion/pdf/" + fechaDesde + '/' + fechaHasta + "?format=pdf");
+
+    }
+
 }
 

@@ -3,13 +3,17 @@ package com.mfuhr.vuelos.models;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -34,7 +38,11 @@ public abstract class AbstractVuelo implements Serializable{
 
     @NotBlank(message = "Debe indicar un nro de vuelo")
     private String nroVuelo;
+
+    @Enumerated(value = EnumType.STRING)
     private TipoVuelo tipoVuelo;
+
+    private Boolean granPorte;
 
     @NotNull(message = "Debe indicar una fecha")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -51,12 +59,26 @@ public abstract class AbstractVuelo implements Serializable{
 
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime horaArribo;
+
+    @Enumerated(value = EnumType.STRING)
     private Estado estado;
+
+    @Enumerated(value = EnumType.STRING)
     private Puerta puerta;
+
+    @Enumerated(value = EnumType.STRING)
     private Posicion pos;
     
     @ManyToOne(fetch = FetchType.LAZY)
     private Importado importado;
+
+    public Boolean esGranPorte(){
+        return this.granPorte;
+    }
+
+    public void setGranPorte(Boolean granPorte){
+        this.granPorte = granPorte;
+    }
 
     public AbstractVuelo(){
         this.estado = Estado.EN_HORARIO;

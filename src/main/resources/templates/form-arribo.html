@@ -5,10 +5,10 @@
 
 <body>
     <header th:replace="template :: header"></header>
-    <div class="container animate__animated animate__fadeIn">
+    <div class="main-container container animate__animated animate__fadeIn">
 
         <div class="card w-50">
-            <h5 class="card-header" th:text="${titulo}"></h5>
+            <h5 class="card-header bg-primary text-light" th:text="${titulo}"></h5>
             <div class="card-body">
                  <form id="form-arribo" class="mt-3" th:action="@{/vuelos/guardar/} + ${'arribo'}" th:object="${vueloForm}" method="post">
                      <div class="row">
@@ -30,6 +30,12 @@
                                  <input type="number" class="form-control" placeholder="Ejemplo: 1880" th:field="*{nroVuelo}">
                                  <small class="form-text text-danger ms-2" th:if="${#fields.hasErrors('nroVuelo')}"
                                  th:errors="*{nroVuelo}"></small>                    
+                             </div>
+                             <div class="input-group input-group-sm m-3"> 
+                                <div class="form-check form-switch" id="form-switch">
+                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:field="*{granPorte}">
+                                    <label class="form-check-label" for="switchGranPorte">Vuelo de gran envergadura</label>
+                                </div>
                              </div>
                              <div class="input-group input-group-sm mb-3">
                                  <label class="input-group-text" for="origen">Origen</label>

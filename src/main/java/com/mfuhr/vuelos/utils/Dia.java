@@ -1,5 +1,7 @@
 package com.mfuhr.vuelos.utils;
 
+import java.util.Arrays;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,5 +19,9 @@ public enum Dia {
 
     private Integer nro;
     private String valor;
+
+    public static Dia getDiaByInt(int nroDia){
+        return Arrays.stream(Dia.values()).filter( diaEncontrado -> diaEncontrado.getNro() == nroDia).findFirst().get();
+    }
 
 }

@@ -5,48 +5,52 @@
 
 <body>
     <header th:replace="template :: header"></header>
-    <div class="container animate__animated animate__fadeIn">
-        <h3>Importar vuelos</h3>
-        <div class="row mt-4">
-            <div class="col float-start">
-                <form th:action="@{/vuelos/guardarImport}" method="post">
-                    <button class="btn btn-primary" th:disabled="${vuelos == null}" type="submit" >Guardar</button>
-                </form>
-            </div>
-            <div class="col">
-                <div class="float-end">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mostrarFormato">
-                        Ver formato
-                    </button>
-                    
-                    <button type="button" class="btn btn-danger" 
-                            th:onclick="|confirmarBorrarUltimoImport()|"
+    <div class="main-container container animate__animated animate__fadeIn">
+        <div id="card-programacion" class="card w-75">
+            <h5 class="card-header bg-primary text-light" th:text="${titulo}"></h5>
+            <div class="card-body">
+                <div class="row mt-4">
+                    <div class="col col-6">
+                        <form th:action="@{/vuelos/guardarImport}" method="post">
+                            <button class="btn btn-primary" th:disabled="!${vuelos}"
+                                type="submit">Guardar</button>
+                        </form>
+                    </div>
+                    <div class="col col-2">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#mostrarFormato">
+                            Ver formato
+                        </button>
+                    </div>
+                    <div class="col col-4">
+                        <button type="button" class="btn btn-danger"
                             data-bs-toggle="modal" data-bs-target="#borrarImportModal">
-                        Deshacer última importación
-                    </button>
+                            Deshacer última importación
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <form enctype="multipart/form-data" th:action="@{/vuelos/upload}" method="post">
-                <div class="input-group mt-2">
-                    <input type="file" name="file" accept=".xls,.xlsx" class="form-control"
-                        placeholder="Recipient's username" aria-label="Recipient's username"
-                        aria-describedby="button-addon2">
-                    <input class="btn btn-outline-secondary" type="submit" value="Importar" id="button-addon2">
-                </div>
+            <div class="row p-3">
+                <form enctype="multipart/form-data" th:action="@{/vuelos/upload}" method="post">
+                    <div class="input-group">
+                        <input type="file" name="file" accept=".xls,.xlsx" class="form-control"
+                            placeholder="Recipient's username" aria-label="Recipient's username"
+                            aria-describedby="button-addon2">
+                        <input class="btn btn-outline-secondary" type="submit" value="Importar" id="button-addon2">
+                    </div>
+                </form>
+
+            </div>
+
+            <table th:replace="excel-template :: excel-table"></table>
+
+            <form th:action="@{/vuelos/guardarImport}" method="post">
+                <button class="btn btn-primary mx-3 mb-3" th:disabled="!${vuelos}" type="submit">Guardar</button>
             </form>
-
         </div>
 
-        <table th:replace="excel-template :: excel-table"></table>
 
-        <form th:action="@{/vuelos/guardarImport}" method="post">
-            <button class="btn btn-primary" th:disabled="${vuelos == null}" type="submit" >Guardar</button>
-        </form>
     </div>
-
-
     <div class="modal fade" id="mostrarFormato" tabindex="-1" aria-labelledby="mostrarFormato" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -55,7 +59,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <img type="image/png" th:src="@{/img/ejemplo.png}" width="100%"/>
+                    <img type="image/png" th:src="@{/img/ejemplo.png}" width="100%" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -65,7 +69,8 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="borrarImportModal" tabindex="-10" aria-labelledby="borrarImportModal" aria-hidden="true">
+    <div class="modal fade" id="borrarImportModal" tabindex="-10" aria-labelledby="borrarImportModal"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -83,6 +88,10 @@
             </div>
         </div>
     </div>
+    
+
+   
+
 </body>
 
 </html>

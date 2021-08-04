@@ -19,6 +19,7 @@
   <script th:src="@{/js/datepicker.js}"></script>
   <script th:src="@{/js/main.js}"></script>
   <script th:src="@{/js/fontawesome.all.min.js}"></script>
+  <script th:src="@{/js/moment.min.js}"></script>
 
   <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
   <title>AIUMA Vuelos</title>
@@ -42,6 +43,9 @@
               <a class="nav-link" th:href="@{/vuelos}">Importar</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" th:href="@{/vuelos/imprimirProg}">Imprimir prog.</a>
+            </li>
+            <li class="nav-item d-none">
               <a class="nav-link" th:href="@{/vuelos/privados}">Cotizar privados</a>
             </li>
             <li class="nav-item">
@@ -51,20 +55,27 @@
         </div>
       </div>
     </nav>
-    <h1 class="m-5"></h1>
-
     <!-- ALERTAS -->
 
-    <div class="alert alert-success alert-dismissible alerta-guardado" id="alert_actualizado" role="alert">
+    <div class="alert alert-success alert-dismissible fade show alerta" th:if="${success}" role="alert">
+      <i class="fas fa-check"></i> <span th:text="${success}"></span>
+    </div>
+    <div class="alert alert-warning alert-dismissible fade show alerta" th:if="${warning}" role="alert">
+      <i class="fas fa-exclamation-triangle"> </i><span th:text="${warning}"></span>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show alerta" th:if="${error}" role="alert">
+      <i class="fas fa-exclamation-triangle"> </i><span th:text="${error}"></span>
+    </div>
+    <div class="alert alert-success alert-dismissible alerta" id="alert_actualizado" role="alert">
       <i class="fas fa-check"></i><span> Vuelo actualizado con éxito!</span> 
     </div>
-    <div class="alert alert-danger alert-dismissible alerta-guardado" id="alert_borrado" role="alert">
+    <div class="alert alert-success alert-dismissible alerta" id="alert_borrado" role="alert">
       <i class="fas fa-check"></i><span> Vuelo eliminado con éxito!</span> 
     </div>
-    <div class="alert alert-dismissible alerta-guardado fade show" 
+   <!--  <div class="alert alert-dismissible alerta fade show" 
           th:classappend="'alert-' + (${clase != null} ? ${clase} : info)" th:if="${msj != null}" id="alert_guardado" role="alert">
       <i class="fas fa-check"></i><span th:text="${msj}"></span> 
-    </div>
+    </div> -->
     <!-- FIN ALERTAS -->
   </header>
 

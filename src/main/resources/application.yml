@@ -1,15 +1,15 @@
 spring:
     datasource:
-        url: jdbc:mysql://localhost/vuelos_db?serverTimezone=America/Argentina/Ushuaia
-        username: admin
-        password: 2744mfuhR
+        url: ${URL}
+        username: ${USER}
+        password: ${PASS}
         driver-class-name: com.mysql.cj.jdbc.Driver
 
 
     jpa:
         database-platform: org.hibernate.dialect.MySQL8Dialect
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: validate
     servlet:
         multipart:
             max-file-size: 15MB

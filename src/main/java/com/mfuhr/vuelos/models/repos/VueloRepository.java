@@ -26,4 +26,7 @@ public interface VueloRepository extends JpaRepository<Vuelo, Long>{
 
     @Query(value = "SELECT COUNT(*) FROM vuelos as v WHERE v.destino = 'USH' AND v.fecha = :fecha", nativeQuery = true)
     public Integer totalVuelos(@Param("fecha") LocalDate fecha);
+
+    @Query(value = "SELECT * FROM vuelos as v WHERE v.fecha >= :fechaDesde AND v.fecha <= :fechaHasta", nativeQuery = true)
+    public List<Vuelo> buscarEntreFechas(@Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
 }

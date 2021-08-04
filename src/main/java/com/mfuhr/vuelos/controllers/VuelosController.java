@@ -51,35 +51,36 @@ public class VuelosController {
 
     @GetMapping("")
     public String importar(Model model) {
-
+        model.addAttribute("titulo", "Importar vuelos");
         return "importar";
     }
 
     @PostMapping("/upload")
-    public String upload(Model model, MultipartFile file) throws IOException {
+    public String upload(Model model, MultipartFile file, RedirectAttributes flash) throws IOException {
         try {
             this.vueloImportadoList = this.vueloService.leerExcel(file);
         } catch (Exception e) {
+            flash.addFlashAttribute("warning"," Debe seleccionar un archivo para importar!");
             System.out.println(e);
-
+            return "redirect:/vuelos";
         }
-        model.addAttribute("message", "File: " + file.getOriginalFilename() + " has been uploaded successfully!");
 
+        model.addAttribute("titulo", "Importar vuelos");
         model.addAttribute("vuelos", vueloImportadoList);
         return "importar";
     }
 
     @PostMapping("/guardarImport")
-    public String guardarImport() {
+    public String guardarImport(RedirectAttributes flash) {
 
         if (vueloImportadoList.size() > 0) {
             this.vueloService.guardarImport(vueloImportadoList);
+            flash.addFlashAttribute("success","Vuelos importados con éxito!");
             /*
              * for (VueloImportado vuelo : vueloImportadoList) { }
              */
         }
         this.vueloImportadoList = null;
-
         return "redirect:/inicio";
     }
 
@@ -87,6 +88,13 @@ public class VuelosController {
     public String privados(Model model) {
 
         return "privados";
+    }
+
+    @GetMapping("/imprimirProg")
+    public String formImprimir(Model model){
+
+        model.addAttribute("titulo", "Imprimir programación");
+        return "/imprimir-programacion";
     }
 
     @PostMapping("/actualizar")
@@ -98,6 +106,7 @@ public class VuelosController {
         Vuelo vueloEncontrado = this.vueloService.buscarPorId(vuelo.getId());
 
         vueloEncontrado.setPos(vuelo.getPos());
+        vueloEncontrado.setGranPorte(vuelo.esGranPorte());
         this.vueloService.guardar(vueloEncontrado);
 
         return new ResponseEntity<>("Vuelo actualizado con éxito!", HttpStatus.OK);
@@ -136,9 +145,7 @@ public class VuelosController {
             model.addAttribute("puertas", Puerta.values());
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
-        } else {
-            flash.addFlashAttribute("warning", "No hay vuelos este día!");
-        }
+        } 
         return "inicio :: home-table";
     }
 
@@ -166,17 +173,15 @@ public class VuelosController {
             model.addAttribute("puertas", Puerta.values());
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
-        } else {
-            flash.addFlashAttribute("warning", "No hay vuelos este día!"); // TODO: ARMAR BIEN
         }
         return "inicio :: home-table";
     }
 
     @PostMapping("/borrarUltimoImport")
-    public String borrarUltimoImport(Model model){
+    public String borrarUltimoImport(Model model, RedirectAttributes flash){
 
         this.vueloService.borrarUltimoImport();
-
+        flash.addFlashAttribute("success", "Se ha eliminado la última importación realizada!");
         return "redirect:/inicio";
     }
 
@@ -232,6 +237,7 @@ public class VuelosController {
         
         vuelo.setFecha(vueloForm.getFecha());
         vuelo.setNroVuelo(vueloForm.getNroVuelo());
+        vuelo.setGranPorte(vueloForm.esGranPorte());
 
         if(esFormArribo){
             vuelo.setOrigen(vueloForm.getOrigen());
@@ -249,7 +255,7 @@ public class VuelosController {
 
         this.vueloService.guardar(vuelo);
 
-        flash.addFlashAttribute("msj"," Vuelo guardado con éxito!").addFlashAttribute("clase","success");
+        flash.addFlashAttribute("success","Vuelo guardado con éxito!");
 
         return "redirect:/inicio";
     }
@@ -273,6 +279,7 @@ public class VuelosController {
         vueloForm.setPuerta(vuelo.getPuerta());
         vueloForm.setAerolinea(vuelo.getNroVuelo().substring(0, 2));
         vueloForm.setNroVuelo(vuelo.getNroVuelo().substring(3, vuelo.getNroVuelo().length()).trim());
+        vueloForm.setGranPorte(vuelo.esGranPorte());
         
         model.addAttribute("titulo", "Editar vuelo");
         if(tipo.equals("arribo")){
@@ -293,6 +300,36 @@ public class VuelosController {
         Integer total = this.vueloService.contarVuelosDiarios(fecha);
 
         return total;
+    }
+
+
+    // MAPEA A LA CLASE ImprimirServicio.java PARA GENERAR EL PDF
+    @GetMapping("/imprimirProgramacion/{type}/{fechaDesdeString}/{fechaHastaString}")
+    public String imprimirProgramacion(@PathVariable String type, @PathVariable String fechaDesdeString, @PathVariable String fechaHastaString,  Model model, RedirectAttributes flash){
+        
+        LocalDate fechaDesde = LocalDate.now();
+        LocalDate fechaHasta = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        fechaDesde = LocalDate.parse(fechaDesdeString,dtf);
+        fechaHasta = LocalDate.parse(fechaHastaString,dtf);
+        List<Vuelo> vuelos = this.vueloService.buscarEntreFechas(fechaDesde, fechaHasta);
+        
+        
+        if(vuelos.isEmpty()){
+            model.addAttribute("titulo", "Imprimir programación");
+            flash.addFlashAttribute("error"," No existen vuelos entre las fechas ingresadas!");
+            return "redirect:/vuelos/imprimirProg";
+        }
+        
+        
+        model.addAttribute("vuelos", vuelos);
+        model.addAttribute("fechaDesde", fechaDesde).addAttribute("fechaHasta", fechaHasta);
+        
+        if(type.equals("pdf")){
+            return "/vuelos/imprimirProgramacionPDF"; // debe quedar con el "/vuelos/imprimirProgramacion" ya que no es una vista html, sino la ruta de un componente clase
+        } else {
+            return "/vuelos/imprimirProgramacionXLS";
+        }
     }
 
 }

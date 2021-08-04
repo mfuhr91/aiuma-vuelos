@@ -94,6 +94,13 @@ public class VueloServiceImpl implements VueloService {
                                             .get();
                                             
                 vueloImportado.setTipoVuelo(tipoVuelo);
+
+                
+                String equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
+                
+                if(equipo.contains("330")){
+                    vueloImportado.setGranPorte(true);
+                }
                 
                 int i = 6;
                 for (Dia dia : Dia.values()) {
@@ -416,6 +423,11 @@ public class VueloServiceImpl implements VueloService {
     @Override
     public Integer contarVuelosDiarios(LocalDate fecha) {
         return this.vueloRepo.totalVuelos(fecha);
+    }
+
+    @Override
+    public List<Vuelo> buscarEntreFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
+        return this.vueloRepo.buscarEntreFechas(fechaDesde, fechaHasta);
     }
 
 }
