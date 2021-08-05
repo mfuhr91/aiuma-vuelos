@@ -132,6 +132,7 @@ public class VueloServiceImpl implements VueloService {
                 vueloImportadoList.add(vueloImportado);
             }
         }
+        log.info("fin importacion del archivo: ".concat(file.getOriginalFilename()));
         workbook.close();
         return vueloImportadoList;
     }

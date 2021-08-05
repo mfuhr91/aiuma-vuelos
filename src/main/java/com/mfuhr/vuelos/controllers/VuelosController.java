@@ -51,6 +51,8 @@ public class VuelosController {
 
     @GetMapping("")
     public String importar(Model model) {
+
+        log.info("vista importar vuelos");
         model.addAttribute("titulo", "Importar vuelos");
         return "importar";
     }
@@ -58,8 +60,10 @@ public class VuelosController {
     @PostMapping("/upload")
     public String upload(Model model, MultipartFile file, RedirectAttributes flash) throws IOException {
         try {
+            log.info("upload archivo: ".concat(file.getOriginalFilename()));
             this.vueloImportadoList = this.vueloService.leerExcel(file);
         } catch (Exception e) {
+            log.error("error al leer archivo");
             flash.addFlashAttribute("warning"," Debe seleccionar un archivo para importar!");
             System.out.println(e);
             return "redirect:/vuelos";
@@ -72,8 +76,8 @@ public class VuelosController {
 
     @PostMapping("/guardarImport")
     public String guardarImport(RedirectAttributes flash) {
-
         if (vueloImportadoList.size() > 0) {
+            log.info("guardar archivo importado");
             this.vueloService.guardarImport(vueloImportadoList);
             flash.addFlashAttribute("success","Vuelos importados con éxito!");
             /*
@@ -92,16 +96,15 @@ public class VuelosController {
 
     @GetMapping("/imprimirProg")
     public String formImprimir(Model model){
-
+        log.info("vista imprimir programacion");
         model.addAttribute("titulo", "Imprimir programación");
-        return "/imprimir-programacion";
+        return "imprimir-programacion";
     }
 
     @PostMapping("/actualizar")
     public ResponseEntity<String> actualizar(Model model, @RequestBody Vuelo vuelo) {
 
-        System.out.println(vuelo.getId().toString().concat(" - ").concat(vuelo.getNroVuelo()).concat(" - ")
-                .concat(vuelo.getPos().toString()));
+        log.info("actualizar vuelo: ".concat(vuelo.getNroVuelo()));
 
         Vuelo vueloEncontrado = this.vueloService.buscarPorId(vuelo.getId());
 
@@ -114,7 +117,7 @@ public class VuelosController {
 
     @PostMapping("/eliminar")
     public ResponseEntity<String> eliminar(Model model, @RequestParam String id) {
-
+        log.info("eliminar vuelo con id: ".concat(id));
         this.vueloService.borrarPorId(Long.parseLong(id));
 
         return new ResponseEntity<>("Vuelo eliminado con éxito!", HttpStatus.OK);
@@ -122,6 +125,8 @@ public class VuelosController {
 
     @RequestMapping("/buscarArribos")
     public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
+
+        log.info("buscar arribos de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
         List<Vuelo> vuelosArribos = new ArrayList<Vuelo>();
         try {
@@ -133,7 +138,7 @@ public class VuelosController {
 
         }
         if (vuelos.size() > 0) {
-
+            log.info("lista de vuelos cargada");
             for (Vuelo vuelo : vuelos) {
                 if (vuelo.getDestino().equals("USH")) {
                     vuelosArribos.add(vuelo);
@@ -146,11 +151,13 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } 
-        return "inicio :: home-table";
+        return "inicio :: table";
     }
 
     @RequestMapping("/buscarSalidas")
     public String buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
+
+        log.info("buscar salidas de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
         List<Vuelo> vuelosSalidas = new ArrayList<Vuelo>();
         try {
@@ -161,7 +168,7 @@ public class VuelosController {
                     .concat(e.toString()));
         }
         if (vuelos.size() > 0) {
-
+            log.info("lista de vuelos cargada");
             for (Vuelo vuelo : vuelos) {
                 if (vuelo.getOrigen().equals("USH")) {
                     vuelosSalidas.add(vuelo);
@@ -174,12 +181,12 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
         }
-        return "inicio :: home-table";
+        return "inicio :: table";
     }
 
     @PostMapping("/borrarUltimoImport")
     public String borrarUltimoImport(Model model, RedirectAttributes flash){
-
+        log.info("borrando ultimo import");
         this.vueloService.borrarUltimoImport();
         flash.addFlashAttribute("success", "Se ha eliminado la última importación realizada!");
         return "redirect:/inicio";
@@ -192,15 +199,17 @@ public class VuelosController {
 
         model = this.vueloService.cargarVista(model, vueloForm, tipo);
         if(tipo.equals("arribo")){
+            log.info("vista del form arribo");
             return "form-arribo";
         } else {
+            log.info("vista del form salida");
             return "form-salida";
         }
     }
 
     @PostMapping("/guardar/{tipo}") // tipo = arribo/salida
     public String guardarArribo(@PathVariable String tipo, Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
-
+        log.info("guardando ".concat(tipo));
         boolean esFormArribo = true;
         model = this.vueloService.validarAerolinea(model, vueloForm, tipo);
         model = this.vueloService.validarHora(model, vueloForm, tipo);
@@ -210,6 +219,7 @@ public class VuelosController {
         }
 
         if(result.hasErrors()){
+            log.error("el form tiene errores: ".concat(result.toString()));
             System.out.println(result);
             model = this.vueloService.validarAerolinea(model, vueloForm, tipo);
             model = this.vueloService.validarHora(model, vueloForm, tipo);
@@ -217,11 +227,13 @@ public class VuelosController {
             return esFormArribo ? "/form-arribo" : "/form-salida";
         }
         if(model.containsAttribute("aerolineaError")){
-            return esFormArribo ? "/form-arribo" : "/form-salida";
+            log.error("error en la aerolinea");
+            return esFormArribo ? "form-arribo" : "form-salida";
             
         }
         if(model.containsAttribute("horaError")){
-            return esFormArribo ? "/form-arribo" : "/form-salida";
+            log.error("error en la hora");
+            return esFormArribo ? "form-arribo" : "form-salida";
             
         }
         
@@ -254,7 +266,7 @@ public class VuelosController {
         vuelo.setPos(vueloForm.getPos());
 
         this.vueloService.guardar(vuelo);
-
+        log.info("vuelo guardado: ".concat(vuelo.getNroVuelo()));
         flash.addFlashAttribute("success","Vuelo guardado con éxito!");
 
         return "redirect:/inicio";
@@ -266,7 +278,7 @@ public class VuelosController {
         
 
         Vuelo vuelo = this.vueloService.buscarPorId(id);
-
+        log.info("vuelo encontrado ".concat(vuelo.getNroVuelo()).concat(" - id: ").concat(vuelo.getId().toString()));
         VueloForm vueloForm = new VueloForm();
         model = this.vueloService.cargarVista(model, vueloForm, tipo);
         
@@ -283,9 +295,11 @@ public class VuelosController {
         
         model.addAttribute("titulo", "Editar vuelo");
         if(tipo.equals("arribo")){
+            log.info("cargar vista form-arribo");
             vueloForm.setHoraArribo(vuelo.getHoraArribo());
             return "form-arribo";
         } else {
+            log.info("cargar vista form-salida");
             vueloForm.setHoraSalida(vuelo.getHoraSalida());
             return "form-salida";
         }
@@ -298,7 +312,8 @@ public class VuelosController {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         fecha = LocalDate.parse(fechaString,dtf);
         Integer total = this.vueloService.contarVuelosDiarios(fecha);
-
+        
+        log.info("total vuelos: ".concat(String.valueOf(total)).concat(" - del dia: ").concat(fechaString));
         return total;
     }
 
@@ -307,6 +322,7 @@ public class VuelosController {
     @GetMapping("/imprimirProgramacion/{type}/{fechaDesdeString}/{fechaHastaString}")
     public String imprimirProgramacion(@PathVariable String type, @PathVariable String fechaDesdeString, @PathVariable String fechaHastaString,  Model model, RedirectAttributes flash){
         
+        log.info("buscar vuelos para imprimir entre: ".concat(fechaDesdeString).concat(" hasta: ").concat(fechaHastaString));
         LocalDate fechaDesde = LocalDate.now();
         LocalDate fechaHasta = LocalDate.now();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -316,6 +332,7 @@ public class VuelosController {
         
         
         if(vuelos.isEmpty()){
+            log.info("lista de vuelos para imprimir vacia");
             model.addAttribute("titulo", "Imprimir programación");
             flash.addFlashAttribute("error"," No existen vuelos entre las fechas ingresadas!");
             return "redirect:/vuelos/imprimirProg";
@@ -326,8 +343,10 @@ public class VuelosController {
         model.addAttribute("fechaDesde", fechaDesde).addAttribute("fechaHasta", fechaHasta);
         
         if(type.equals("pdf")){
+            log.info("imprimir pdf");
             return "/vuelos/imprimirProgramacionPDF"; // debe quedar con el "/vuelos/imprimirProgramacion" ya que no es una vista html, sino la ruta de un componente clase
         } else {
+            log.info("descargar xls");
             return "/vuelos/imprimirProgramacionXLS";
         }
     }
