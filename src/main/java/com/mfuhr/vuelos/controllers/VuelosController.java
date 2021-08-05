@@ -318,7 +318,7 @@ public class VuelosController {
     }
 
 
-    // MAPEA A LA CLASE ImprimirServicio.java PARA GENERAR EL PDF
+    // MAPEA A LA CLASE imprimirProgrmacionPDF.java o imprimirProgramacionXLS.java PARA GENERAR EL PDF
     @GetMapping("/imprimirProgramacion/{type}/{fechaDesdeString}/{fechaHastaString}")
     public String imprimirProgramacion(@PathVariable String type, @PathVariable String fechaDesdeString, @PathVariable String fechaHastaString,  Model model, RedirectAttributes flash){
         
