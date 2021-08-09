@@ -26,4 +26,6 @@ logging:
     level:
         org:
             hibernate:
-                SQL: debug 
+                SQL: debug
+server:
+    port: ${PORT:8090} #cambio el puerto de app a 8090
