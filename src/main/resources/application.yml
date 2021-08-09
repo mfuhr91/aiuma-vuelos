@@ -1,15 +1,15 @@
 spring:
     datasource:
         url: jdbc:mysql://localhost/vuelos_db?serverTimezone=America/Argentina/Ushuaia
-        username: admin
-        password: 2744mfuhR
+        username: tasas
+        password: tasas
         driver-class-name: com.mysql.cj.jdbc.Driver
 
 
     jpa:
         database-platform: org.hibernate.dialect.MySQL8Dialect
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: validate
     servlet:
         multipart:
             max-file-size: 15MB
@@ -26,6 +26,6 @@ logging:
     level:
         org:
             hibernate:
-                SQL: debug
+                SQL: debug 
 server:
     port: ${PORT:8090} #cambio el puerto de app a 8090
