@@ -330,6 +330,13 @@ public class VuelosController {
         fechaHasta = LocalDate.parse(fechaHastaString,dtf);
         List<Vuelo> vuelos = this.vueloService.buscarEntreFechas(fechaDesde, fechaHasta);
         
+
+        if(fechaDesde.isAfter(fechaHasta)){
+            log.info("fechaDesde posterior a fechaHasta");
+            model.addAttribute("titulo", "Imprimir programación");
+            flash.addFlashAttribute("error"," Debe seleccionar una 'fecha desde' menor a la 'fecha hasta'!");
+            return "redirect:/vuelos/imprimirProg";
+        }
         
         if(vuelos.isEmpty()){
             log.info("lista de vuelos para imprimir vacia");

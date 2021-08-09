@@ -48,7 +48,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
         // LE COLOCO NOMBRE AL ARCHIVO
         // attachment; => colocandolo antes de filename se descarga el pdf
         // automaticamente en Descargas del cliente
-        response.setHeader("Content-Disposition", "attachment;filename=\"Programación del ".concat(fechaDesdeString).concat(" al ")
+        response.setHeader("Content-Disposition", "filename=\"Programación del ".concat(fechaDesdeString).concat(" al ")
                 .concat(fechaHastaString).concat(".pdf\""));
 
         doc.setMargins(30, 30, 85, 10);
@@ -145,7 +145,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
         
         Font font = FontFactory.getFont(FontFactory.HELVETICA, 8);
 
-        if(vuelo.esGranPorte()){
+        if(vuelo.esGranPorte() != null && vuelo.esGranPorte()){
             cel.setBackgroundColor(Color.ORANGE); 
             cel.setPhrase( new Phrase(vuelo.getNroVuelo(), font)); 
             tabla.addCell(cel);
