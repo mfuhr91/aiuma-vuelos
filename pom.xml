@@ -91,6 +91,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>sistema-integral</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -104,11 +105,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.heroku.sdk</groupId>
-				<artifactId>heroku-maven-plugin</artifactId>
-				<version>3.0.3</version>
-			  </plugin>
 		</plugins>
 	</build>
 </project>
