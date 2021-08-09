@@ -33,6 +33,7 @@ build/
 .DS_Store
 /logs
 application.yml.dev
-application.yml.local
 application.yml.prod
+application.yml.heroku
 /target
+/logs
