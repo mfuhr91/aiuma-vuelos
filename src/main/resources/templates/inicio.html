@@ -65,166 +65,171 @@
 
 
                 <!-- LAS TABLAS DE CARGAN DINAMICAMENTE Y SE INSERTAN EN id="result" -->
-                <table th:if="${vuelosArribos}" class="vuelosArribos table table-sm  table-hovered" th:fragment="tableArribos">
-                    <thead >
-                        <tr>
-                            <th class="align-middle text-center">Aerop.</th>
-                            <th class="align-middle text-center">Vuelo</th>
-                            <th class="align-middle text-center">Proc.</th>
-                            <th class="align-middle text-center">Arribo Est.</th>
-                            <th class="align-middle text-center">Estado</th>
-                            <th class="align-middle text-center">Gran Enver.</th>
-                            <th class="align-middle text-center">Puerta</th>
-                            <th class="align-middle text-center">Pos.</th>
-                            <th class="align-middle text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="vuelo, idx : ${vuelosArribos}">
-                            <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
-                            <td class="text-center align-middle"
-                                th:text="${vuelo.horaArribo}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
-                            <td class="text-center align-middle">
-                                <div class="form-switch switch-tabla">
-                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
-                                 </div>
-                            </td>
-                            <td class="text-center align-middle">
-                                <select name="puerta">
-                                    <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
-                                    value=""></option>
-                                    <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
-                                        th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
-                                        th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
-                                </select>
-                            </td>
-                            <td class="text-center align-middle">
-                                <select name="posicion"> 
-                                    <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
+                <div th:fragment="tableArribos" th:remove="tag">
+
+                    <table th:if="${vuelosArribos}" class="vuelosArribos table table-sm  table-hovered" >
+                        <thead >
+                            <tr>
+                                <th class="align-middle text-center">Aerop.</th>
+                                <th class="align-middle text-center">Vuelo</th>
+                                <th class="align-middle text-center">Proc.</th>
+                                <th class="align-middle text-center">Arribo Est.</th>
+                                <th class="align-middle text-center">Estado</th>
+                                <th class="align-middle text-center">Gran Enver.</th>
+                                <th class="align-middle text-center">Puerta</th>
+                                <th class="align-middle text-center">Pos.</th>
+                                <th class="align-middle text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="vuelo, idx : ${vuelosArribos}">
+                                <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
+                                <td class="text-center align-middle"
+                                    th:text="${vuelo.horaArribo}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
+                                <td class="text-center align-middle">
+                                    <div class="form-switch switch-tabla">
+                                        <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
+                                     </div>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <select name="puerta">
+                                        <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
                                         value=""></option>
-                                    <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
+                                        <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
+                                            th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
+                                            th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
+                                    </select>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <select name="posicion"> 
+                                        <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
+                                            value=""></option>
+                                        <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
+                                                th:selected="${pos.valor} == ${vuelo.pos.valor}"
+                                                th:value="${pos.valor}" th:text="${pos.valor}"></option>
+                                    </select>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <div class="row mx-2">
+                                        <div class="col botones">
+                                            <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
+                                            th:data_nroVuelo="${vuelo.nroVuelo}"
+                                            th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                            class="btn btn-success btn-guardar">
+                                            <i class="far fa-save fa-sm"></i>
+                                        </button>
+                                        </div>
+                                        <div class="col botones">
+                                            <form th:action="@{/vuelos/editar/} + ${'arribo'} + '/' + ${vuelo.id}" method="get">
+                                                <button type="submit"
+                                                    class="btn btn-warning btn-editar">
+                                                    <i class="fas fa-pencil-alt fa-sm"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="col botones">
+                                            <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
+                                            th:data_nroVuelo="${vuelo.nroVuelo}"
+                                            th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                            class="btn btn-danger btn-borrar mx-1">
+                                            <i class="far fa-trash-alt fa-sm"></i>
+                                        </button>
+                                        </div>
+                                    </div>
+                                   
+                                   
+                                   
+                                </td>
+                                
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+                </div>
+                <div th:fragment="tableSalidas" th:remove="tag">
+                    <table th:if="${vuelosSalidas}" class="vuelosSalidas table table-sm table-stripped table-hovered" >
+                        <thead>
+                            <tr>
+                                <th class="align-middle text-center">Aerop.</th>
+                                <th class="align-middle text-center">Vuelo</th>
+                                <th class="align-middle text-center">Destino.</th>
+                                <th class="align-middle text-center">Partida Est.</th>
+                                <th class="align-middle text-center">Estado</th>
+                                <th class="align-middle text-center">Gran Enver.</th>
+                                <th class="align-middle text-center">Puerta</th>
+                                <th class="align-middle text-center">Pos.</th>
+                                <th class="align-middle text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="vuelo : ${vuelosSalidas}">
+                                <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
+                                <td class="text-center align-middle"
+                                    th:text="${vuelo.horaSalida}"></td>
+                                <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
+                                <td class="text-center align-middle">
+                                    <div class="form-switch switch-tabla">
+                                        <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
+                                    </div>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <select name="puerta">
+                                        <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
+                                        value=""></option>
+                                        <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
+                                            th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
+                                            th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
+                                    </select>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <select name="posicion">
+                                        <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
+                                        value=""></option>
+                                        <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
                                             th:selected="${pos.valor} == ${vuelo.pos.valor}"
                                             th:value="${pos.valor}" th:text="${pos.valor}"></option>
-                                </select>
-                            </td>
-                            <td class="text-center align-middle">
-                                <div class="row mx-2">
-                                    <div class="col botones">
-                                        <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
-                                        th:data_nroVuelo="${vuelo.nroVuelo}"
-                                        th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                        class="btn btn-success btn-guardar">
-                                        <i class="far fa-save fa-sm"></i>
-                                    </button>
+                                    </select>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <div class="row mx-2">
+                                        <div class="col botones">
+                                            <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
+                                            th:data_nroVuelo="${vuelo.nroVuelo}"
+                                            th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                            class="btn btn-success btn-guardar">
+                                            <i class="far fa-save fa-sm"></i>
+                                        </button>
+                                        </div>
+                                        <div class="col botones">
+                                            <form th:action="@{/vuelos/editar/} + ${'salida'} + '/' + ${vuelo.id}" method="get">
+                                                <button type="submit"
+                                                    class="btn btn-warning btn-editar">       
+                                                    <i class="fas fa-pencil-alt fa-sm"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="col botones">
+                                            <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
+                                            th:data_nroVuelo="${vuelo.nroVuelo}"
+                                            th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
+                                            class="btn btn-danger btn-borrar mx-1">
+                                            <i class="far fa-trash-alt fa-sm"></i>
+                                        </button>
+                                        </div>
                                     </div>
-                                    <div class="col botones">
-                                        <form th:action="@{/vuelos/editar/} + ${'arribo'} + '/' + ${vuelo.id}" method="get">
-                                            <button type="submit"
-                                                class="btn btn-warning btn-editar">
-                                                <i class="fas fa-pencil-alt fa-sm"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col botones">
-                                        <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
-                                        th:data_nroVuelo="${vuelo.nroVuelo}"
-                                        th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                        class="btn btn-danger btn-borrar mx-1">
-                                        <i class="far fa-trash-alt fa-sm"></i>
-                                    </button>
-                                    </div>
-                                </div>
-                               
-                               
-                               
-                            </td>
-                            
-                        </tr>
-                        
-                    </tbody>
-                    
-                </table>
-                <table th:if="${vuelosSalidas}" class="vuelosSalidas table table-sm table-stripped table-hovered" th:fragment="tableSalidas">
-                    <thead>
-                        <tr>
-                            <th class="align-middle text-center">Aerop.</th>
-                            <th class="align-middle text-center">Vuelo</th>
-                            <th class="align-middle text-center">Destino.</th>
-                            <th class="align-middle text-center">Partida Est.</th>
-                            <th class="align-middle text-center">Estado</th>
-                            <th class="align-middle text-center">Gran Enver.</th>
-                            <th class="align-middle text-center">Puerta</th>
-                            <th class="align-middle text-center">Pos.</th>
-                            <th class="align-middle text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="vuelo : ${vuelosSalidas}">
-                            <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
-                            <td class="text-center align-middle"
-                                th:text="${vuelo.horaSalida}"></td>
-                            <td class="text-center align-middle" th:text="${vuelo.estado.valorEs}"></td>
-                            <td class="text-center align-middle">
-                                <div class="form-switch switch-tabla">
-                                    <input class="form-check-input" type="checkbox" id="switchGranPorte" th:checked="${vuelo.granPorte}">
-                                 </div>
-                            </td>
-                            <td class="text-center align-middle">
-                                <select name="puerta">
-                                    <option th:each="puerta : ${puertas}" th:if="${#strings.startsWith(puerta.nro,'Seleccionar')}"
-                                    value=""></option>
-                                    <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
-                                        th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
-                                        th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
-                                </select>
-                            </td>
-                            <td class="text-center align-middle">
-                                <select name="posicion">
-                                    <option th:each="pos : ${posiciones}" th:if="${#strings.startsWith(pos.valor,'Seleccionar')}"
-                                    value=""></option>
-                                    <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
-                                        th:selected="${pos.valor} == ${vuelo.pos.valor}"
-                                        th:value="${pos.valor}" th:text="${pos.valor}"></option>
-                                </select>
-                            </td>
-                            <td class="text-center align-middle">
-                                <div class="row mx-2">
-                                    <div class="col botones">
-                                        <button type="button" id="guardar_" th:attrappend="id=${vuelo.id}"
-                                        th:data_nroVuelo="${vuelo.nroVuelo}"
-                                        th:onclick="|guardarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                        class="btn btn-success btn-guardar">
-                                        <i class="far fa-save fa-sm"></i>
-                                    </button>
-                                    </div>
-                                    <div class="col botones">
-                                        <form th:action="@{/vuelos/editar/} + ${'salida'} + '/' + ${vuelo.id}" method="get">
-                                            <button type="submit"
-                                                class="btn btn-warning btn-editar">       
-                                                <i class="fas fa-pencil-alt fa-sm"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col botones">
-                                        <button type="button" id="borrar_" th:attrappend="id=${vuelo.id}"
-                                        th:data_nroVuelo="${vuelo.nroVuelo}"
-                                        th:onclick="|confirmarBorrarVuelo('${vuelo.id}', this.getAttribute('data_nroVuelo'), this.getAttribute('id'))|"
-                                        class="btn btn-danger btn-borrar mx-1">
-                                        <i class="far fa-trash-alt fa-sm"></i>
-                                    </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
 
-                    </tbody>
-                   
-                </table>
+                        </tbody>
+                    
+                    </table>
+                </div>
                 <!-- LAS TABLAS DE CARGAN DINAMICAMENTE Y SE INSERTAN EN id="result" -->
             </section>
 
