@@ -65,7 +65,7 @@
 
 
                 <!-- LAS TABLAS DE CARGAN DINAMICAMENTE Y SE INSERTAN EN id="result" -->
-                <table th:if="${vuelosArribos}" class="vuelosArribos table table-sm  table-hovered" th:fragment="table">
+                <table th:if="${vuelosArribos}" class="vuelosArribos table table-sm  table-hovered" th:fragment="tableArribos">
                     <thead >
                         <tr>
                             <th class="align-middle text-center">Aerop.</th>
@@ -147,7 +147,7 @@
                     </tbody>
                     
                 </table>
-                <table th:if="${vuelosSalidas}" class="vuelosSalidas table table-sm table-stripped table-hovered" th:fragment="table">
+                <table th:if="${vuelosSalidas}" class="vuelosSalidas table table-sm table-stripped table-hovered" th:fragment="tableSalidas">
                     <thead>
                         <tr>
                             <th class="align-middle text-center">Aerop.</th>
