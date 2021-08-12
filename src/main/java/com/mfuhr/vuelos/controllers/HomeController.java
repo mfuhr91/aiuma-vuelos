@@ -44,7 +44,7 @@ public class HomeController {
         log.info("total avisos: ".concat(String.valueOf(avisos != null ? avisos.size() : "null")));
         model.addAttribute("avisos", avisos);
        
-        return "inicio :: avisos";
+        return "avisos :: avisos";
     }
 
 

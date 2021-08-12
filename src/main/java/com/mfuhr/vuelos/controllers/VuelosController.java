@@ -151,7 +151,7 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } 
-        return "/inicio :: tableArribos";
+        return "tablas :: tablaArribos";
     }
 
     @RequestMapping("/buscarSalidas")
@@ -181,7 +181,7 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
         }
-        return "/inicio :: tableSalidas";
+        return "tablas :: tablaSalidas";
     }
 
     @PostMapping("/borrarUltimoImport")

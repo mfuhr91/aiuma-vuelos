@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.thymeleaf.org">
+
+    <head>
+    </head>
+
+    <body>
+        <aside id="avisos" th:fragment="avisos">
+            <div th:if="${avisos}"  th:each="aviso : ${avisos}">
+                <div class="alert alert-warning fade show mt-1 mx-1 animate__animated animate__headShake"
+                       th:if="${aviso.cantidadVuelos < 4}">
+                    <div class="row">
+                        <div class="col col-1 pt-1">
+                            <i class="fas fa-traffic-light fa-2x"></i>
+                        </div>
+                        <div class="col ps-3">
+                            <span> ¡Hay <span th:text="${aviso.cantidadVuelos}"></span> vuelos dentro de una misma hora el día </span>
+                            <strong>
+                                <span th:text="${#temporals.format(aviso.fecha,'dd/MM/yyyy')}"></span>
+                            </strong>!                              
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="alert alert-danger fade show mt-1 mx-1 animate__animated animate__headShake"
+                    th:if="${aviso.cantidadVuelos > 3}">
+                    <div class="row">
+                        <div class="col col-1 pt-1">
+                            <i class="fas fa-traffic-light fa-2x"></i>
+                        </div>
+                        <div class="col ps-3">
+                            <span> ¡Hay <span th:text="${aviso.cantidadVuelos}"></span> vuelos dentro de una misma hora el día </span>
+                            <strong>
+                                <span th:text="${#temporals.format(aviso.fecha,'dd/MM/yyyy')}"></span>
+                            </strong>!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </body>
+
+</html>
