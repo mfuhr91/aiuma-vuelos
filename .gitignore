@@ -35,5 +35,6 @@ build/
 application.yml.dev
 application.yml.prod
 application.yml.heroku
+application.yml.info
 /target
 /logs
