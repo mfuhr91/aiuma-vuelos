@@ -126,7 +126,7 @@ public class VuelosController {
 
     @RequestMapping("/buscarArribos")
     public ModelAndView buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
-
+        ModelAndView mav = new ModelAndView("tablas :: tablaArribos");
         log.info("buscar arribos de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
         List<Vuelo> vuelosArribos = new ArrayList<Vuelo>();
@@ -148,16 +148,16 @@ public class VuelosController {
 
             Collections.sort(vuelosArribos, (v1, v2) -> v1.getHoraArribo().compareTo(v2.getHoraArribo()));
 
-            model.addAttribute("puertas", Puerta.values());
-            model.addAttribute("posiciones", Posicion.values());
-            model.addAttribute("vuelosArribos", vuelosArribos);
+            mav.addObject("puertas", Puerta.values());
+            mav.addObject("posiciones", Posicion.values());
+            mav.addObject("vuelosArribos", vuelosArribos);
         } 
-        return new ModelAndView("tablas :: tablaArribos");
+        return mav;
     }
 
     @RequestMapping("/buscarSalidas")
     public ModelAndView buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
-
+        ModelAndView mav = new ModelAndView("tablas :: tablaSalidas");
         log.info("buscar salidas de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
         List<Vuelo> vuelosSalidas = new ArrayList<Vuelo>();
@@ -178,11 +178,11 @@ public class VuelosController {
 
             Collections.sort(vuelosSalidas, (v1, v2) -> v1.getHoraSalida().compareTo(v2.getHoraSalida()));
 
-            model.addAttribute("puertas", Puerta.values());
-            model.addAttribute("posiciones", Posicion.values());
-            model.addAttribute("vuelosSalidas", vuelosSalidas);
+            mav.addObject("puertas", Puerta.values());
+            mav.addObject("posiciones", Posicion.values());
+            mav.addObject("vuelosSalidas", vuelosSalidas);
         }
-        return new ModelAndView("tablas :: tablaSalidas");
+        return mav;
     }
 
     @PostMapping("/borrarUltimoImport")
