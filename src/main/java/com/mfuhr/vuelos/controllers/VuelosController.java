@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -124,7 +125,7 @@ public class VuelosController {
     }
 
     @RequestMapping("/buscarArribos")
-    public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
+    public ModelAndView buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar arribos de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
@@ -151,11 +152,11 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } 
-        return "tablas :: tablaArribos";
+        return new ModelAndView("tablas :: tablaArribos");
     }
 
     @RequestMapping("/buscarSalidas")
-    public String buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
+    public ModelAndView buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar salidas de la fecha ".concat(fecha));
         List<Vuelo> vuelos = new ArrayList<Vuelo>();
@@ -181,7 +182,7 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
         }
-        return "tablas :: tablaSalidas";
+        return new ModelAndView("tablas :: tablaSalidas");
     }
 
     @PostMapping("/borrarUltimoImport")
