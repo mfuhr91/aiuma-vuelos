@@ -28,10 +28,6 @@ $(document).ready(() => {
     if (tabArribos.hasClass("active")) {
         $("#resultSalidas").hide();
     }
-
-    /* window.setTimeout(() => {
-        $(".alerta-guardado").fadeOut();
-    }, 2000); */
     window.setTimeout(() => {
         $(".alerta").fadeOut();
     }, 2000); 
