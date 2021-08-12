@@ -123,7 +123,7 @@ public class VuelosController {
         return new ResponseEntity<>("Vuelo eliminado con éxito!", HttpStatus.OK);
     }
 
-    @RequestMapping("buscarArribos")
+    @RequestMapping("/buscarArribos")
     public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar arribos de la fecha ".concat(fecha));
@@ -151,10 +151,10 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } 
-        return "inicio :: tableArribos";
+        return "/inicio :: tableArribos";
     }
 
-    @RequestMapping("buscarSalidas")
+    @RequestMapping("/buscarSalidas")
     public String buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar salidas de la fecha ".concat(fecha));
@@ -181,7 +181,7 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosSalidas", vuelosSalidas);
         }
-        return "inicio :: tableSalidas";
+        return "/inicio :: tableSalidas";
     }
 
     @PostMapping("/borrarUltimoImport")
