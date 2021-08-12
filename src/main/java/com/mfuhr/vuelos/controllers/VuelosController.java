@@ -49,7 +49,7 @@ public class VuelosController {
 
     private List<VueloImportado> vueloImportadoList;
 
-    @GetMapping("")
+    @GetMapping("/importar")
     public String importar(Model model) {
 
         log.info("vista importar vuelos");
@@ -123,7 +123,7 @@ public class VuelosController {
         return new ResponseEntity<>("Vuelo eliminado con éxito!", HttpStatus.OK);
     }
 
-    @RequestMapping("/buscarArribos")
+    @RequestMapping("buscarArribos")
     public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar arribos de la fecha ".concat(fecha));
@@ -154,7 +154,7 @@ public class VuelosController {
         return "inicio :: tableArribos";
     }
 
-    @RequestMapping("/buscarSalidas")
+    @RequestMapping("buscarSalidas")
     public String buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar salidas de la fecha ".concat(fecha));
