@@ -1,7 +1,6 @@
 package com.mfuhr.vuelos.models;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import com.mfuhr.vuelos.utils.Dia;

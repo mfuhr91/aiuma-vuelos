@@ -1,14 +1,13 @@
 package com.mfuhr.vuelos.models;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,11 +23,13 @@ public class Importado implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date fecha;
+    private LocalDate fecha;
+    private Integer cantidadRegistros;
+    private String nombreArchivo;
     private Integer version;
 
     public Importado(Integer version){
         this.version = version;
-        this.fecha = new Date();
+        this.fecha = LocalDate.now();
     }
 }

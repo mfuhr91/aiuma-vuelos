@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.mfuhr.vuelos.models.Aeropuerto;
+import com.mfuhr.vuelos.models.Importado;
 import com.mfuhr.vuelos.models.Vuelo;
 import com.mfuhr.vuelos.models.VueloForm;
 import com.mfuhr.vuelos.models.VueloImportado;
@@ -26,7 +27,7 @@ public interface VueloService {
 
     public void borrarPorId(Long id);
 
-    public void guardarImport(List<VueloImportado> vueloImportadoList);
+    public void guardarImport(List<VueloImportado> vueloImportadoList, String nombreArchivo);
 
     public List<Aviso> comprobarVuelos(LocalDate fecha);
 
@@ -43,5 +44,13 @@ public interface VueloService {
     public Integer contarVuelosDiarios(LocalDate fecha);
 
     public List<Vuelo> buscarEntreFechas(LocalDate fechaDesde, LocalDate fechaHasta);
+
+    public List<Importado> buscarTodosImportados();
+
+    public List<Vuelo> buscarVuelosPorImportados(Importado importado);
+
+    public void borrarImportPorId(Long id);
+
+    public Importado buscarImportadoPorId(Long id);
 
 }

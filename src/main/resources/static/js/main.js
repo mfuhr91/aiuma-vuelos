@@ -7,6 +7,7 @@ $(document).ready(() => {
    
     $("#alert_actualizado").hide();
     $("#alert_borrado").hide();
+    $("#alert_import_borrado").hide();
     let tabArribos = $("#tab-arribos");
     let tabSalidas = $("#tab-salidas");
     tabArribos.click(() => {
@@ -104,6 +105,39 @@ function borrarVuelo(id, idBoton) {
     });
 
 }
+
+function confirmarBorrarImport(id, fechaImport,nombreArchivo, idBoton) {
+    $('#borrarImportModal').modal('show');
+    $('#borrarBoton').attr("onclick","borrarImport('"+ id +"','"+ idBoton + "')");
+    fechaImport = moment(fechaImport).format("DD/MM/YYYY");
+    $('.fechaImport').text(fechaImport)
+    $('.nombreArchivo').text(nombreArchivo);
+}
+function borrarImport(id, idBoton) {
+
+    idBoton = $(".lista-imports").find($(document.getElementById(idBoton)));
+    $.ajax({
+        type: "POST",
+        url: "/vuelos/eliminarImport",
+        
+        contentType: "application/x-www-form-urlencoded",
+        data: "id="+ id,
+        timeout: 600000,
+        success: function (data) {
+            $("#borrarImportModal").modal("hide");
+            idBoton.closest('tr').remove();
+            $("#alert_import_borrado").fadeIn();
+            window.setTimeout(() => {
+                $("#alert_import_borrado").fadeOut();
+            }, 2000);
+        },
+        error: function (e) {
+            console.log("No se pudo borrar la importación, ERROR: " + e);
+        }
+    });
+
+}
+
 function guardarVuelo(id, nroVuelo, idBoton) {
 
     idBoton = $(document.getElementById(idBoton));

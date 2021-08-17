@@ -37,3 +37,4 @@ application.yml.prod
 application.yml.heroku
 /target
 /logs
+import.sql

@@ -118,7 +118,7 @@ td.ui-datepicker-week-end{
     margin: 0px;
 }
 
-.tabla-import {
+.tabla-import,.lista-imports {
     width: auto !important;
 }
 

@@ -43,7 +43,7 @@ insert into aeropuertos (nombre, codigo) VALUES ("Aeropuerto de Villa Gesell","V
 
 
 
-insert into importados (version) VALUES (1);
+insert into importados (fecha, cantidad_registros,nombre_archivo, version) VALUES ('2021-07-09',194,'importacio_manual.xls',1);
 
 INSERT INTO vuelos (id,destino,gran_porte,estado,fecha,hora_arribo,hora_salida,nro_vuelo,origen,pos,puerta,tipo_vuelo,importado_id) VALUES (3,'USH',FALSE,'EN_HORARIO','2021-07-09','12:45:00',NULL,'AR 1862','FTE','NA','NA','NA',1);
 INSERT INTO vuelos (id,destino,gran_porte,estado,fecha,hora_arribo,hora_salida,nro_vuelo,origen,pos,puerta,tipo_vuelo,importado_id) VALUES (2,'USH',FALSE,'EN_HORARIO','2021-07-07','12:45:00',NULL,'AR 1862','FTE','NA','NA','NA',1);

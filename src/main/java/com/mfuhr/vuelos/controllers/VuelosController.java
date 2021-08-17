@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.mfuhr.vuelos.models.Importado;
 import com.mfuhr.vuelos.models.Vuelo;
 import com.mfuhr.vuelos.models.VueloForm;
 import com.mfuhr.vuelos.models.VueloImportado;
@@ -48,19 +49,27 @@ public class VuelosController {
     VueloService vueloService;
 
     private List<VueloImportado> vueloImportadoList;
+    private String nombreArchivo;
 
     @GetMapping("/importar")
     public String importar(Model model) {
 
+        List<Importado> importaciones = this.vueloService.buscarTodosImportados();
+        
+        
+        
         log.info("vista importar vuelos");
         model.addAttribute("titulo", "Importar vuelos");
+        model.addAttribute("tituloLista", "Lista de Importaciones");
+        model.addAttribute("importaciones", !importaciones.isEmpty() ? importaciones : null );
         return "importar";
     }
-
+    
     @PostMapping("/upload")
     public String upload(Model model, MultipartFile file, RedirectAttributes flash) throws IOException {
         try {
             log.info("upload archivo: ".concat(file.getOriginalFilename()));
+            this.nombreArchivo = file.getOriginalFilename();
             this.vueloImportadoList = this.vueloService.leerExcel(file);
         } catch (Exception e) {
             log.error("error al leer archivo");
@@ -68,9 +77,12 @@ public class VuelosController {
             System.out.println(e);
             return "redirect:/vuelos";
         }
-
+        
+        List<Importado> importaciones = this.vueloService.buscarTodosImportados();
         model.addAttribute("titulo", "Importar vuelos");
         model.addAttribute("vuelos", vueloImportadoList);
+        model.addAttribute("tituloLista", "Lista de Importaciones");
+        model.addAttribute("importaciones", importaciones);
         return "importar";
     }
 
@@ -78,11 +90,8 @@ public class VuelosController {
     public String guardarImport(RedirectAttributes flash) {
         if (vueloImportadoList.size() > 0) {
             log.info("guardar archivo importado");
-            this.vueloService.guardarImport(vueloImportadoList);
+            this.vueloService.guardarImport(vueloImportadoList, nombreArchivo);
             flash.addFlashAttribute("success","Vuelos importados con éxito!");
-            /*
-             * for (VueloImportado vuelo : vueloImportadoList) { }
-             */
         }
         this.vueloImportadoList = null;
         return "redirect:/inicio";
@@ -184,12 +193,22 @@ public class VuelosController {
         return "tablas :: tablaSalidas";
     }
 
-    @PostMapping("/borrarUltimoImport")
-    public String borrarUltimoImport(Model model, RedirectAttributes flash){
-        log.info("borrando ultimo import");
-        this.vueloService.borrarUltimoImport();
-        flash.addFlashAttribute("success", "Se ha eliminado la última importación realizada!");
-        return "redirect:/inicio";
+    @PostMapping("/eliminarImport")
+    public ResponseEntity<String> borrarUltimoImport(Model model, @RequestParam String id, RedirectAttributes flash){
+        log.info("borrando import".concat(id) );
+
+        Importado importado = this.vueloService.buscarImportadoPorId(Long.valueOf(id));
+        if(importado == null){
+            return new ResponseEntity<>("Import no encontrado!", HttpStatus.NOT_FOUND);
+        }
+
+        List<Vuelo> vuelos = this.vueloService.buscarVuelosPorImportados(importado);
+        for (Vuelo vuelo : vuelos) {
+            this.vueloService.borrarPorId(vuelo.getId());
+        }
+
+        this.vueloService.borrarImportPorId(Long.parseLong(id));
+        return new ResponseEntity<>("Import eliminado con éxito!", HttpStatus.OK);
     }
 
     @GetMapping("/form/{tipo}") // tipo = arribo/salida

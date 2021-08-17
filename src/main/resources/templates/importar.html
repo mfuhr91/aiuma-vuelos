@@ -22,12 +22,6 @@
                             Ver formato
                         </button>
                     </div>
-                    <div class="col col-4">
-                        <button type="button" class="btn btn-danger"
-                            data-bs-toggle="modal" data-bs-target="#borrarImportModal">
-                            Deshacer última importación
-                        </button>
-                    </div>
                 </div>
             </div>
             <div class="row p-3">
@@ -48,8 +42,45 @@
                 <button class="btn btn-primary mx-3 mb-3" th:disabled="!${vuelos}" type="submit">Guardar</button>
             </form>
         </div>
-
-
+        <div class="card w-75 mt-4">
+            <h5 class="card-header bg-primary text-light" th:text="${tituloLista}"></h5>
+            <table th:if="${importaciones}" class="table lista-imports table-sm table-bordered table-hovered m-2">
+                <thead >
+                    <tr>
+                        <th class="align-middle text-center">Fecha</th>
+                        <th class="align-middle text-center">Cant. Registros</th>
+                        <th class="align-middle text-center">Nombre Archivo</th>
+                        <th class="align-middle text-center">Nro. Importación</th>
+                        <th class="align-middle text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="import: ${importaciones}">
+                        <td class="text-center align-middle" th:text="${#temporals.format(import.fecha, 'dd/MM/yyyy')}"></td>
+                        <td class="text-center align-middle" th:text="${import.cantidadRegistros}"></td>
+                        <td class="text-center align-middle" th:text="${import.nombreArchivo}"></td>
+                        <td class="text-center align-middle" th:text="${import.version}"></td>
+                        <td class="text-center align-middle">
+                            <div class="row mx-2">
+                                <div class="col botones">
+                                    <button type="button" id="borrar_" th:attrappend="id=${import.id}"
+                                    th:data_fecha="${import.fecha}"
+                                    th:data_nombreArchivo="${import.nombreArchivo}"
+                                    th:onclick="|confirmarBorrarImport('${import.id}', this.getAttribute('data_fecha'), this.getAttribute('data_nombreArchivo'), this.getAttribute('id'))|"
+                                    class="btn btn-danger btn-borrar mx-1">
+                                    <i class="far fa-trash-alt fa-sm"></i>
+                                </button>
+                                </div>
+                            </div>
+                        
+                        </td>
+                        
+                    </tr>
+                    
+                </tbody>
+                
+            </table>
+        </div>
     </div>
     <div class="modal fade" id="mostrarFormato" tabindex="-1" aria-labelledby="mostrarFormato" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -71,19 +102,17 @@
     <!-- Modal -->
     <div class="modal fade" id="borrarImportModal" tabindex="-10" aria-labelledby="borrarImportModal"
         aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4" id="exampleModalLabel">¡Atención!</h5>
                 </div>
                 <div class="modal-body fs-5">
-                    ¿Está seguro que quiere deshacer la última importación?
+                    ¿Está seguro que quiere borrar la importación del archivo "<strong class="nombreArchivo"></strong>" del día <strong class="fechaImport"></strong>?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/vuelos/borrarUltimoImport}" method="post">
-                        <button id="deshacerBoton" class="btn btn-danger mx-1" type="submit">Eliminar</button>
-                    </form>
+                    <button type="button" id="borrarBoton" class="btn btn-danger mx-1" >Eliminar</button>
                 </div>
             </div>
         </div>

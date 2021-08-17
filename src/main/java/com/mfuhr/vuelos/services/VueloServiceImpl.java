@@ -47,28 +47,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class VueloServiceImpl implements VueloService {
-
+    
     private final Logger log = LoggerFactory.getLogger(VueloServiceImpl.class);
-
+    
     @Autowired
     private VueloRepository vueloRepo;
-
+    
     @Autowired
     private ImportadoRepository importadoRepo;
-
+    
     @Autowired
     private AeropuertoRepository aeropuertoRepo;
-
+    
     public void guardarImportacion(Importado importado) {
         this.importadoRepo.save(importado);
     }
-
+    
     @Override
     public List<VueloImportado> leerExcel(MultipartFile file) throws IOException {
         List<VueloImportado> vueloImportadoList = new ArrayList<>();
-
+        
         XSSFWorkbook workbook = new XSSFWorkbook((file.getInputStream()));
         XSSFSheet worksheet = workbook.getSheetAt(0);
+        
         // Row row = worksheet.getRow(0);
         for (Row row : worksheet) {
             VueloImportado vueloImportado = new VueloImportado();
@@ -173,11 +174,13 @@ public class VueloServiceImpl implements VueloService {
     }
 
     @Override
-    public void guardarImport(List<VueloImportado> vueloImportadoList) {
+    public void guardarImport(List<VueloImportado> vueloImportadoList, String nombreArchivo) {
         if (vueloImportadoList.size() > 0) {
 
             Importado importado = new Importado(getNuevaVersion());
 
+            importado.setCantidadRegistros(vueloImportadoList.size());
+            importado.setNombreArchivo(nombreArchivo);
             this.importadoRepo.save(importado);
 
             for (VueloImportado vueloImportado : vueloImportadoList) {
@@ -248,7 +251,7 @@ public class VueloServiceImpl implements VueloService {
 
         Importado ultimoImport = getUltimoImport();
 
-        return ultimoImport != null ? ultimoImport.getVersion() + 1 : 0;
+        return ultimoImport != null ? ultimoImport.getVersion() + 1 : 1;
     }
 
     @Override
@@ -429,6 +432,26 @@ public class VueloServiceImpl implements VueloService {
     @Override
     public List<Vuelo> buscarEntreFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
         return this.vueloRepo.buscarEntreFechas(fechaDesde, fechaHasta);
+    }
+
+    @Override
+    public List<Importado> buscarTodosImportados() {
+        return this.importadoRepo.findAll();
+    }
+
+    @Override
+    public void borrarImportPorId(Long id) {
+       this.importadoRepo.deleteById(id);
+    }
+
+    @Override
+    public List<Vuelo> buscarVuelosPorImportados(Importado importado) {
+        return this.vueloRepo.findByImportado(importado);
+    }
+
+    @Override
+    public Importado buscarImportadoPorId(Long id) {
+        return this.importadoRepo.findById(id).orElse(null);
     }
 
 }
