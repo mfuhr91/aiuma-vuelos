@@ -20,8 +20,14 @@ $(document).ready(() => {
 
 
 function buscarVuelos(fecha) {
-    $("#resultArribos").load('/vuelos/buscarArribos', { fecha });
-    $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha });
+    $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
+
+        console.log("ARRIBOS:     "+data);
+    });
+    $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha }, (data) => {
+
+        console.log("SALIDAS:     " +data);
+    });
 }
 function enviarFecha(fechaString){
     $("#resultAvisos").load('fechaSeleccionada', {fechaString});

@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="vuelo, idx : ${vuelosArribos}">
+                <tr th:each="vuelo : ${vuelosArribos}">
                     <td class="text-center align-middle" th:text="${vuelo.destino}"></td>
                     <td class="text-center align-middle" th:text="${vuelo.nroVuelo}"></td>
                     <td class="text-center align-middle" th:text="${vuelo.origen}"></td>
