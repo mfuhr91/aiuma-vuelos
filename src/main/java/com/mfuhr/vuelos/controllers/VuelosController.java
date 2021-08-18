@@ -160,7 +160,7 @@ public class VuelosController {
             model.addAttribute("posiciones", Posicion.values());
             model.addAttribute("vuelosArribos", vuelosArribos);
         } 
-        return "tablas :: tablaArribos";
+        return "tablas";
     }
 
     @RequestMapping("/buscarSalidas")
