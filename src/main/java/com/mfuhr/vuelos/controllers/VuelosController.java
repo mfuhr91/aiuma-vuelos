@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -133,7 +132,7 @@ public class VuelosController {
         return new ResponseEntity<>("Vuelo eliminado con éxito!", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/buscarArribos", method = RequestMethod.POST)
+    @RequestMapping("/buscarArribos")
     public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar arribos de la fecha ".concat(fecha));
@@ -164,7 +163,7 @@ public class VuelosController {
         return "tablas :: tablaArribos";
     }
 
-    @RequestMapping(value = "/buscarSalidas", method = RequestMethod.POST)
+    @RequestMapping("/buscarSalidas")
     public String buscarVuelosSalidas(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar salidas de la fecha ".concat(fecha));

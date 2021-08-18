@@ -20,14 +20,20 @@ $(document).ready(() => {
 
 
 function buscarVuelos(fecha) {
-    $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
+
+    $.get('/vuelos/buscarArribos', { fecha })
+        .done((data) => {
+        console.log("ARRIBOS:     "+data);
+        $("#resultArribos").html(data);
+    });
+   /*  $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
 
         console.log("ARRIBOS:     "+data);
     });
     $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha }, (data) => {
 
         console.log("SALIDAS:     " +data);
-    });
+    }); */
 }
 function enviarFecha(fechaString){
     $("#resultAvisos").load('fechaSeleccionada', {fechaString});
