@@ -35,6 +35,8 @@ import com.mfuhr.vuelos.utils.Puerta;
 import com.mfuhr.vuelos.utils.TipoVuelo;
 import com.mfuhr.vuelos.utils.Usado;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -66,79 +68,110 @@ public class VueloServiceImpl implements VueloService {
     @Override
     public List<VueloImportado> leerExcel(MultipartFile file) throws IOException {
         List<VueloImportado> vueloImportadoList = new ArrayList<>();
-        
-        XSSFWorkbook workbook = new XSSFWorkbook((file.getInputStream()));
-        XSSFSheet worksheet = workbook.getSheetAt(0);
-        
-        // Row row = worksheet.getRow(0);
-        for (Row row : worksheet) {
-            VueloImportado vueloImportado = new VueloImportado();
 
-            if (row.getPhysicalNumberOfCells() < 15)
-                continue;
-
-            if (row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")
-                    || row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")) {
-
-                List<Dia> diaList = new ArrayList<Dia>();
-                String nroVueloString = row.getCell(Celda.NRO_VUELO.getNro()).getStringCellValue().trim();
-                String aerolinea = nroVueloString.substring(0,2);
-                String nro = nroVueloString.substring(2, nroVueloString.length()).trim();
-                
-                nroVueloString = aerolinea.concat(" ").concat(nro);
-
-                vueloImportado.setNroVuelo(nroVueloString);
-
-                TipoVuelo tipoVuelo = Arrays.stream(TipoVuelo.values())
-                                            .filter( tipo -> tipo.name().equalsIgnoreCase(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue().trim()))
-                                            .findFirst()
-                                            .get();
-                                            
-                vueloImportado.setTipoVuelo(tipoVuelo);
-
-                
-                String equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
-                
-                if(equipo.contains("330")){
-                    vueloImportado.setGranPorte(true);
+        boolean esXLSX = file.getOriginalFilename().endsWith("xlsx");
+    
+        // Row row = worksheet.getRow(0);    
+        if(esXLSX){
+            XSSFWorkbook workbook = new XSSFWorkbook((file.getInputStream()));
+            XSSFSheet worksheet = workbook.getSheetAt(0);
+            for (Row row : worksheet) {
+                VueloImportado vueloImportado = leerFila(row);
+                if(vueloImportadoList == null){
+                    continue;
                 }
-                
-                int i = 6;
-                for (Dia dia : Dia.values()) {
-                    if (row.getCell(i).getStringCellValue().trim().equalsIgnoreCase("x")) {
-                        diaList.add(dia);
-                    } else {
-                        diaList.add(null);
-                    }
-                    i++;
-                }
-                if (diaList.size() > 0) {
-                    vueloImportado.setDias(diaList);
-                }
-                try {
-                    vueloImportado.setFechaDesde(row.getCell(Celda.FECHA_DESDE.getNro()).getLocalDateTimeCellValue().toLocalDate());
-                    vueloImportado.setFechaHasta(row.getCell(Celda.FECHA_HASTA.getNro()).getLocalDateTimeCellValue().toLocalDate());
-                } catch (Exception e) {
-                    LocalDate fechaDesde = parsearStringFecha(row.getCell(Celda.FECHA_DESDE.getNro()).getStringCellValue());
-                    LocalDate fechaHasta = parsearStringFecha(row.getCell(Celda.FECHA_HASTA.getNro()).getStringCellValue());
-                    vueloImportado.setFechaDesde(fechaDesde);
-                    vueloImportado.setFechaHasta(fechaHasta);
-                }
-
-                vueloImportado.setOrigen(row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim());
-                vueloImportado.setHoraSalida(row.getCell(Celda.STD.getNro()).getLocalDateTimeCellValue().toLocalTime());
-                vueloImportado.setDestino(row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim());
-                vueloImportado.setHoraArribo(row.getCell(Celda.STA.getNro()).getLocalDateTimeCellValue().toLocalTime());
-
                 vueloImportadoList.add(vueloImportado);
             }
+            workbook.close();
+        } else {
+            HSSFWorkbook workbook = new HSSFWorkbook((file.getInputStream()));
+            HSSFSheet worksheet = workbook.getSheetAt(0);
+            for (Row row : worksheet) {
+                VueloImportado vueloImportado = leerFila(row);
+                if(vueloImportado == null){
+                    continue;
+                }
+                vueloImportadoList.add(vueloImportado);
+            }
+            workbook.close();
         }
         log.info("fin importacion del archivo: ".concat(file.getOriginalFilename()));
-        workbook.close();
         return vueloImportadoList;
     }
 
-    private LocalDate parsearStringFecha(String fechaString) {
+    private VueloImportado leerFila(Row row) {
+        
+        VueloImportado vueloImportado = new VueloImportado();
+
+        if (row.getPhysicalNumberOfCells() < 15)
+            return null;
+
+        if (row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")
+                || row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim().toLowerCase().equals("ush")) {
+
+            List<Dia> diaList = new ArrayList<Dia>();
+            String nroVueloString = row.getCell(Celda.NRO_VUELO.getNro()).getStringCellValue().trim();
+            String aerolinea = nroVueloString.substring(0,2);
+            String nro = nroVueloString.substring(2, nroVueloString.length()).trim();
+            
+            nroVueloString = aerolinea.concat(" ").concat(nro);
+
+            vueloImportado.setNroVuelo(nroVueloString);
+
+            TipoVuelo tipoVuelo = Arrays.stream(TipoVuelo.values())
+                                        .filter( tipo -> tipo.name().equalsIgnoreCase(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue().trim()))
+                                        .findFirst()
+                                        .get();
+                                        
+            vueloImportado.setTipoVuelo(tipoVuelo);
+
+            try {
+                String equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
+                if(equipo.contains("330")){
+                    vueloImportado.setGranPorte(true);
+                }
+            } catch (Exception e){
+                
+                Integer equipo = (int) row.getCell(Celda.EQUIPO.getNro()).getNumericCellValue();
+                if(equipo == 330){
+                    vueloImportado.setGranPorte(true);
+                }
+            }
+            
+            
+            int i = 6;
+            for (Dia dia : Dia.values()) {
+                if (row.getCell(i).getStringCellValue().trim().equalsIgnoreCase("x")) {
+                    diaList.add(dia);
+                } else {
+                    diaList.add(null);
+                }
+                i++;
+            }
+            if (diaList.size() > 0) {
+                vueloImportado.setDias(diaList);
+            }
+            try {
+                vueloImportado.setFechaDesde(row.getCell(Celda.FECHA_DESDE.getNro()).getLocalDateTimeCellValue().toLocalDate());
+                vueloImportado.setFechaHasta(row.getCell(Celda.FECHA_HASTA.getNro()).getLocalDateTimeCellValue().toLocalDate());
+            } catch (Exception e) {
+                LocalDate fechaDesde = parsearStringFecha(row.getCell(Celda.FECHA_DESDE.getNro()).getStringCellValue());
+                LocalDate fechaHasta = parsearStringFecha(row.getCell(Celda.FECHA_HASTA.getNro()).getStringCellValue());
+                vueloImportado.setFechaDesde(fechaDesde);
+                vueloImportado.setFechaHasta(fechaHasta);
+            }
+
+            vueloImportado.setOrigen(row.getCell(Celda.ORIGEN.getNro()).getStringCellValue().trim());
+            vueloImportado.setHoraSalida(row.getCell(Celda.STD.getNro()).getLocalDateTimeCellValue().toLocalTime());
+            vueloImportado.setDestino(row.getCell(Celda.DESTINO.getNro()).getStringCellValue().trim());
+            vueloImportado.setHoraArribo(row.getCell(Celda.STA.getNro()).getLocalDateTimeCellValue().toLocalTime());
+
+            return vueloImportado;
+        }
+        return null;
+	}
+
+	private LocalDate parsearStringFecha(String fechaString) {
         String dia = "";
         String mes = "";
         String anio = "";

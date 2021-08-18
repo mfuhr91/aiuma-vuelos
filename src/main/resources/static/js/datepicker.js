@@ -27,7 +27,7 @@ function buscarVuelos(fecha) {
         $("#resultArribos").html(data);
     });
  */
-    $.ajax({
+   /*  $.ajax({
         type: 'GET',
         url: '/vuelos/buscarArribos',
         contentType: "application/x-www-form-urlencoded",
@@ -40,15 +40,15 @@ function buscarVuelos(fecha) {
         error: function (e) {
             console.log("LALALA: " + e);
         }
-    });
-   /*  $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
+    }); */
+    $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
 
         console.log("ARRIBOS:     "+data);
     });
     $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha }, (data) => {
 
         console.log("SALIDAS:     " +data);
-    }); */
+    });
 }
 function enviarFecha(fechaString){
     $("#resultAvisos").load('fechaSeleccionada', {fechaString});

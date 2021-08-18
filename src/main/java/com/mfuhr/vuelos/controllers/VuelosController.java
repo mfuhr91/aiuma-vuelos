@@ -132,7 +132,7 @@ public class VuelosController {
         return new ResponseEntity<>("Vuelo eliminado con éxito!", HttpStatus.OK);
     }
 
-    @GetMapping("/buscarArribos")
+    @RequestMapping("/buscarArribos")
     public String buscarVuelosArribos(Model model, @RequestParam String fecha, RedirectAttributes flash) {
 
         log.info("buscar arribos de la fecha ".concat(fecha));
