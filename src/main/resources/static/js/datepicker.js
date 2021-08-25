@@ -41,14 +41,9 @@ function buscarVuelos(fecha) {
             console.log("LALALA: " + e);
         }
     }); */
-    $("#resultArribos").load('/vuelos/buscarArribos', { fecha }, (data) => {
+    $("#resultArribos").load('/vuelos/buscarArribos', { fecha });
 
-        console.log("ARRIBOS:     "+data);
-    });
-    $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha }, (data) => {
-
-        console.log("SALIDAS:     " +data);
-    });
+    $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha });
 }
 function enviarFecha(fechaString){
     $("#resultAvisos").load('fechaSeleccionada', {fechaString});

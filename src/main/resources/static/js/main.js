@@ -144,12 +144,16 @@ function guardarVuelo(id, nroVuelo, idBoton) {
     let pos = idBoton.closest('td').prev('td').children().val();
     let fila = idBoton.closest('tr');
     let columnaGranPorte = fila.find('td:eq(5)');
+    let columnaPuerta = fila.find('td:eq(6)');
     let granPorte = columnaGranPorte.find('input').is(':checked');
+    let puerta = columnaPuerta.find('select').val();
     pos = pos == '' ? 0 : pos;
+    puerta = puerta == '' ? 0 : puerta;
     let vuelo = {
                     id: id,
                     nroVuelo: nroVuelo,
                     pos: pos,
+                    puerta: puerta,
                     granPorte: granPorte,
                 }
     $.ajax({

@@ -118,6 +118,7 @@ public class VuelosController {
         Vuelo vueloEncontrado = this.vueloService.buscarPorId(vuelo.getId());
 
         vueloEncontrado.setPos(vuelo.getPos());
+        vueloEncontrado.setPuerta(vuelo.getPuerta());
         vueloEncontrado.setGranPorte(vuelo.esGranPorte());
         this.vueloService.guardar(vueloEncontrado);
 
@@ -227,7 +228,7 @@ public class VuelosController {
     }
 
     @PostMapping("/guardar/{tipo}") // tipo = arribo/salida
-    public String guardarArribo(@PathVariable String tipo, Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
+    public String guardar(@PathVariable String tipo, Model model,@Valid VueloForm vueloForm, BindingResult result, RedirectAttributes flash) {
         log.info("guardando ".concat(tipo));
         boolean esFormArribo = true;
         model = this.vueloService.validarAerolinea(model, vueloForm, tipo);

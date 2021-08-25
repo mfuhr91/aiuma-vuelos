@@ -77,7 +77,7 @@ public class VueloServiceImpl implements VueloService {
             XSSFSheet worksheet = workbook.getSheetAt(0);
             for (Row row : worksheet) {
                 VueloImportado vueloImportado = leerFila(row);
-                if(vueloImportadoList == null){
+                if(vueloImportado == null){
                     continue;
                 }
                 vueloImportadoList.add(vueloImportado);

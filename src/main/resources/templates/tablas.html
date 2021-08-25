@@ -36,7 +36,7 @@
                             value=""></option>
                             <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
                                 th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
-                                th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
+                                th:value="${puerta.name}" th:text="${puerta.nro}"></option>
                         </select>
                     </td>
                     <td class="text-center align-middle">
@@ -45,7 +45,7 @@
                                 value=""></option>
                             <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
                                     th:selected="${pos.valor} == ${vuelo.pos.valor}"
-                                    th:value="${pos.valor}" th:text="${pos.valor}"></option>
+                                    th:value="${pos.name}" th:text="${pos.valor}"></option>
                         </select>
                     </td>
                     <td class="text-center align-middle">
@@ -119,7 +119,7 @@
                             value=""></option>
                             <option th:each="puerta : ${puertas}" th:if="${!#strings.startsWith(puerta.nro,'Seleccionar')}" 
                                 th:selected="${puerta.nro} == ${vuelo.puerta.nro}"
-                                th:value="${puerta.nro}" th:text="${puerta.nro}"></option>
+                                th:value="${puerta.name}" th:text="${puerta.nro}"></option>
                         </select>
                     </td>
                     <td class="text-center align-middle">
@@ -128,7 +128,7 @@
                             value=""></option>
                             <option th:each="pos : ${posiciones}" th:if="${!#strings.startsWith(pos.valor,'Seleccionar')}" 
                                 th:selected="${pos.valor} == ${vuelo.pos.valor}"
-                                th:value="${pos.valor}" th:text="${pos.valor}"></option>
+                                th:value="${pos.name}" th:text="${pos.valor}"></option>
                         </select>
                     </td>
                     <td class="text-center align-middle">
