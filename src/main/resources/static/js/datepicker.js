@@ -20,27 +20,6 @@ $(document).ready(() => {
 
 
 function buscarVuelos(fecha) {
-
-   /*  $.get('/vuelos/buscarArribos', { fecha })
-        .done((data) => {
-        console.log("ARRIBOS:     "+data);
-        $("#resultArribos").html(data);
-    });
- */
-   /*  $.ajax({
-        type: 'GET',
-        url: '/vuelos/buscarArribos',
-        contentType: "application/x-www-form-urlencoded",
-        data: 'fecha='+fecha,
-        timeout: 600000,
-        success: function (data) {
-            console.log("ARRIBOS:     "+data);
-            $("#resultArribos").html(data);
-        },
-        error: function (e) {
-            console.log("LALALA: " + e);
-        }
-    }); */
     $("#resultArribos").load('/vuelos/buscarArribos', { fecha });
 
     $("#resultSalidas").load('/vuelos/buscarSalidas', { fecha });
