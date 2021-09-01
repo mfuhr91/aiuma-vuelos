@@ -143,27 +143,32 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
     private PdfPCell cargarVuelos(Vuelo vuelo, PdfPTable tabla, PdfPCell cel) {
         
         Font font = FontFactory.getFont(FontFactory.HELVETICA, 8);
+        if(vuelo == null){
+            cel.setPhrase(new Phrase());
+            tabla.addCell(cel);
+        } else {
 
-        if(vuelo.esGranPorte() != null && vuelo.esGranPorte()){
-            cel.setBackgroundColor(Color.ORANGE); 
-            cel.setPhrase( new Phrase(vuelo.getNroVuelo(), font)); 
-            tabla.addCell(cel);
-             
-        } else {
-            cel.setPhrase(new Phrase(vuelo.getNroVuelo(), font));
-            tabla.addCell(cel);
-        } 
-        
-        if(vuelo.getDestino().equals("USH")){
-            cel.setPhrase(new Phrase(vuelo.getOrigen(), font));
-            tabla.addCell(cel);
-            cel.setPhrase(new Phrase(vuelo.getHoraArribo().toString(), font));
-            tabla.addCell(cel);
-        } else {
-            cel.setPhrase(new Phrase(vuelo.getDestino(), font));
-            tabla.addCell(cel);
-            cel.setPhrase(new Phrase(vuelo.getHoraSalida().toString(), font));
-            tabla.addCell(cel);
+            if(vuelo.esGranPorte() != null && vuelo.esGranPorte()){
+                cel.setBackgroundColor(Color.ORANGE); 
+                cel.setPhrase(new Phrase(vuelo.getNroVuelo(), font)); 
+                tabla.addCell(cel);
+                 
+            } else {
+                cel.setPhrase(new Phrase(vuelo.getNroVuelo(), font));
+                tabla.addCell(cel);
+            } 
+            
+            if(vuelo.getDestino().equals("USH")){
+                cel.setPhrase(new Phrase(vuelo.getOrigen(), font));
+                tabla.addCell(cel);
+                cel.setPhrase(new Phrase(vuelo.getHoraArribo().toString(), font));
+                tabla.addCell(cel);
+            } else {
+                cel.setPhrase(new Phrase(vuelo.getDestino(), font));
+                tabla.addCell(cel);
+                cel.setPhrase(new Phrase(vuelo.getHoraSalida().toString(), font));
+                tabla.addCell(cel);
+            }
         }
 
         cel.setBackgroundColor(Color.WHITE);
@@ -174,9 +179,10 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
 
     private Vuelo buscarVueloEnlazado(Vuelo vueloArr, List<Vuelo> vuelosSalida) {
         Vuelo vuelo = null;
+        
         for (Vuelo vueloSal : vuelosSalida) {
 
-            if (vueloArr.getHoraArribo().isAfter(vueloSal.getHoraSalida())) {
+            if (vueloArr.getHoraArribo().isAfter(vueloSal.getHoraSalida()) || !vueloArr.getCompania().equals(vueloSal.getCompania())) {
                 continue;
             }
             vuelo = vueloSal;

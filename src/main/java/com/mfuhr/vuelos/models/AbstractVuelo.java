@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -13,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -84,5 +82,10 @@ public abstract class AbstractVuelo implements Serializable{
         this.estado = Estado.EN_HORARIO;
         this.puerta = Puerta.NA;
         this.pos = Posicion.NA;
+    }
+
+    public String getCompania(){
+        String arr[] = this.nroVuelo.split(" ");
+        return arr[0];
     }
 }
