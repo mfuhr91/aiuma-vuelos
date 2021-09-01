@@ -124,10 +124,10 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
 
                 Vuelo vueloSal = buscarVueloEnlazado(vuelo, vuelosSalida);
 
-                vuelosSalida.remove(vueloSal);
                 encSalida = crearSubColumnas(encArribo, encSalida, cel, tablaSalidas);
-
-                tablaDia.addCell(cargarVuelos(vuelo, tablaSalidas, cel));
+                
+                tablaDia.addCell(cargarVuelos(vueloSal, tablaSalidas, cel));
+                vuelosSalida.remove(vueloSal);
 
             }
 
@@ -137,7 +137,6 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
                 doc.newPage();
                 crearColumnas(doc, cel, columna);
             }
-
         }
     }
 
@@ -155,12 +154,18 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
             tabla.addCell(cel);
         } 
         
+        if(vuelo.getDestino().equals("USH")){
+            cel.setPhrase(new Phrase(vuelo.getOrigen(), font));
+            tabla.addCell(cel);
+            cel.setPhrase(new Phrase(vuelo.getHoraArribo().toString(), font));
+            tabla.addCell(cel);
+        } else {
+            cel.setPhrase(new Phrase(vuelo.getDestino(), font));
+            tabla.addCell(cel);
+            cel.setPhrase(new Phrase(vuelo.getHoraSalida().toString(), font));
+            tabla.addCell(cel);
+        }
 
-
-        cel.setPhrase(new Phrase(vuelo.getOrigen(), font));
-        tabla.addCell(cel);
-        cel.setPhrase(new Phrase(vuelo.getHoraArribo().toString(), font));
-        tabla.addCell(cel);
         cel.setBackgroundColor(Color.WHITE);
         PdfPCell celVuelo = new PdfPCell(tabla);
 

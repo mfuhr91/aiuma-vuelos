@@ -148,7 +148,7 @@ public class VuelosController {
 
         }
         if (vuelos.size() > 0) {
-            log.info("lista de vuelos cargada");
+            log.info("lista de arribos de vuelos cargada");
             for (Vuelo vuelo : vuelos) {
                 if (vuelo.getDestino().equals("USH")) {
                     vuelosArribos.add(vuelo);
@@ -178,7 +178,7 @@ public class VuelosController {
                     .concat(e.toString()));
         }
         if (vuelos.size() > 0) {
-            log.info("lista de vuelos cargada");
+            log.info("lista de salidas de vuelos cargada");
             for (Vuelo vuelo : vuelos) {
                 if (vuelo.getOrigen().equals("USH")) {
                     vuelosSalidas.add(vuelo);
