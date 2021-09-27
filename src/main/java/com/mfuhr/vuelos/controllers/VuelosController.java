@@ -75,7 +75,7 @@ public class VuelosController {
             log.error("error al leer archivo");
             flash.addFlashAttribute("warning"," Debe seleccionar un archivo para importar!");
             System.out.println(e);
-            return "redirect:/vuelos";
+            return "redirect:/vuelos/importar";
         }
         
         List<Importado> importaciones = this.vueloService.buscarTodosImportados();

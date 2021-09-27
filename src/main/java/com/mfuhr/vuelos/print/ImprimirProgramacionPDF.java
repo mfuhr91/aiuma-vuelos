@@ -86,6 +86,8 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
             String mesString = "";
             if (fecha.getMonthValue() < 10) {
                 mesString = "0".concat(String.valueOf(fecha.getMonthValue()));
+            } else {
+                mesString = String.valueOf(fecha.getMonthValue());
             }
             Mes mes = Mes.getMesByNro(mesString);
 
@@ -117,13 +119,11 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
 
                 tablaArribos = new PdfPTable(3);
                 tablaSalidas = new PdfPTable(3);
-
+                
+                Vuelo vueloSal = buscarVueloEnlazado(vuelo, vuelosSalida);
                 encArribo = crearSubColumnas(encArribo, encSalida, cel, tablaArribos);
                 
                 tablaDia.addCell(cargarVuelos(vuelo, tablaArribos, cel));
-
-                Vuelo vueloSal = buscarVueloEnlazado(vuelo, vuelosSalida);
-
                 encSalida = crearSubColumnas(encArribo, encSalida, cel, tablaSalidas);
                 
                 tablaDia.addCell(cargarVuelos(vueloSal, tablaSalidas, cel));
@@ -177,19 +177,16 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
         return celVuelo;
     }
 
-    private Vuelo buscarVueloEnlazado(Vuelo vueloArr, List<Vuelo> vuelosSalida) {
-        Vuelo vuelo = null;
+    private Vuelo buscarVueloEnlazado(Vuelo vuelo, List<Vuelo> vuelosSalida) {
         
         for (Vuelo vueloSal : vuelosSalida) {
+            if(vuelo.getHoraArribo().isAfter(vueloSal.getHoraSalida())) continue;
 
-            if (vueloArr.getHoraArribo().isAfter(vueloSal.getHoraSalida()) || !vueloArr.getCompania().equals(vueloSal.getCompania())) {
-                continue;
-            }
-            vuelo = vueloSal;
-            break;
-
+            if(!vuelo.getCompania().equals(vueloSal.getCompania())) continue;
+            
+            return vueloSal;
         }
-        return vuelo;
+        return null;
     }
 
     private void crearColumnas(Document doc, PdfPCell cel, PdfPTable columna) {
