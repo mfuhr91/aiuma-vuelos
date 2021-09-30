@@ -208,7 +208,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
 
     private boolean validarCompania(Vuelo vueloArr, Vuelo vueloSal){
         return vueloArr.getCompania().equals(vueloSal.getCompania());
-    }s
+    }
     private boolean validarVuelosCorrelativos(Vuelo vueloArr, Vuelo vueloSal){
         int nroArr = vueloArr.getNro();
         int nroSal = vueloSal.getNro();
