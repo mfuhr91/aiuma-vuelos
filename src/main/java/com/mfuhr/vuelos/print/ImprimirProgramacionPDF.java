@@ -173,6 +173,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
                         listVuelosGuardados.add(vueloSal);
                         continue;
                     }
+                    
                 } else {
                     // si la posicion de los vuelos en las listas no coinciden y el vueloSalida sale antes que el vueloArribo
                     if(vueloSal.getHoraSalida().isBefore(vueloArr.getHoraArribo())) {
@@ -185,12 +186,12 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
                 // si no es la misma compania salta el vueloSalida    
                 if(!validarCompania(vueloArr, vueloSal)) continue;
 
-                if(validarVuelosCorrelativos(vueloArr, vueloSal)){
-                    list.add(vueloArr);
-                    list.add(vueloSal);
-                    listVuelosGuardados.add(vueloSal);
-                    continue primerBucle;
-                } 
+        
+                list.add(vueloArr);
+                list.add(vueloSal);
+                listVuelosGuardados.add(vueloSal);
+                continue primerBucle;
+                
    
             }
             // Si no se enlazo la salida correspondiente es porque el vuelo arribado debe pernoctar
@@ -207,7 +208,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
 
     private boolean validarCompania(Vuelo vueloArr, Vuelo vueloSal){
         return vueloArr.getCompania().equals(vueloSal.getCompania());
-    }
+    }s
     private boolean validarVuelosCorrelativos(Vuelo vueloArr, Vuelo vueloSal){
         int nroArr = vueloArr.getNro();
         int nroSal = vueloSal.getNro();
