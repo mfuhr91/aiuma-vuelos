@@ -98,25 +98,16 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
             cel.setPhrase(new Phrase(diaDelaSemana.getValor().substring(0, 3).concat(" ").concat(diaMes),
                     FontFactory.getFont(FontFactory.HELVETICA, 8)));
             cel.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            List<Vuelo> vuelosDelDia = vuelos.stream().filter(vuelo -> diaActual.equals(vuelo.getFecha()))
-                    .collect(Collectors.toList());
+            
+            List<Vuelo> vuelosOrdenados = this.ordenarVuelosDelDia(vuelos, diaActual);
 
-            List<Vuelo> vuelosArribo = vuelosDelDia.stream().filter(vuelo -> vuelo.getHoraArribo() != null)
-                    .collect(Collectors.toList());
-            List<Vuelo> vuelosSalida = vuelosDelDia.stream().filter(vuelo -> vuelo.getHoraSalida() != null)
-                    .collect(Collectors.toList());
-
-            cel.setRowspan(vuelosArribo.size() > vuelosSalida.size() ? vuelosArribo.size() : vuelosSalida.size());
+            cel.setRowspan(vuelosOrdenados.size() / 2);
             tablaDia.addCell(cel);
-            vuelosArribo.sort((v1, v2) -> v1.getHoraArribo().compareTo(v2.getHoraArribo()));
-            vuelosSalida.sort((v1, v2) -> v1.getHoraSalida().compareTo(v2.getHoraSalida()));
             PdfPTable tablaArribos = null;
             PdfPTable tablaSalidas = null;
-
             boolean encArribo = false;
             boolean encSalida = false;
 
-            List<Vuelo> vuelosOrdenados = this.getVuelosEnlazados(vuelosArribo, vuelosSalida);
 
             int index = 0;
             for (Vuelo vuelo : vuelosOrdenados) {
@@ -144,6 +135,22 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
                 crearColumnas(doc, cel, columna);
             }
         }
+    }
+
+    private List<Vuelo> ordenarVuelosDelDia(List<Vuelo> vuelos, LocalDate diaActual){
+        
+        List<Vuelo> vuelosDelDia = vuelos.stream().filter(vuelo -> diaActual.equals(vuelo.getFecha()))
+                    .collect(Collectors.toList());
+
+        List<Vuelo> vuelosArribo = vuelosDelDia.stream().filter(vuelo -> vuelo.getHoraArribo() != null)
+                .collect(Collectors.toList());
+        List<Vuelo> vuelosSalida = vuelosDelDia.stream().filter(vuelo -> vuelo.getHoraSalida() != null)
+                .collect(Collectors.toList());
+
+        vuelosArribo.sort((v1, v2) -> v1.getHoraArribo().compareTo(v2.getHoraArribo()));
+        vuelosSalida.sort((v1, v2) -> v1.getHoraSalida().compareTo(v2.getHoraSalida()));
+                
+        return this.getVuelosEnlazados(vuelosArribo, vuelosSalida);
     }
 
     private boolean indexPar(int index){
@@ -209,11 +216,12 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
     private boolean validarCompania(Vuelo vueloArr, Vuelo vueloSal){
         return vueloArr.getCompania().equals(vueloSal.getCompania());
     }
+    /* 
     private boolean validarVuelosCorrelativos(Vuelo vueloArr, Vuelo vueloSal){
         int nroArr = vueloArr.getNro();
         int nroSal = vueloSal.getNro();
         return nroArr + 1 == nroSal || nroArr - 1 == nroSal;
-    }
+    } */
 
     private boolean validarPosicionLista(int i, int j){
         return i == 0 && j == 0;
