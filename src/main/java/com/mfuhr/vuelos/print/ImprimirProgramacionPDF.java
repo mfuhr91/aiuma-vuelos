@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -105,7 +106,7 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
             List<Vuelo> vuelosSalida = vuelosDelDia.stream().filter(vuelo -> vuelo.getHoraSalida() != null)
                     .collect(Collectors.toList());
 
-            cel.setRowspan(vuelosArribo.size());
+            cel.setRowspan(vuelosArribo.size() > vuelosSalida.size() ? vuelosArribo.size() : vuelosSalida.size());
             tablaDia.addCell(cel);
             vuelosArribo.sort((v1, v2) -> v1.getHoraArribo().compareTo(v2.getHoraArribo()));
             vuelosSalida.sort((v1, v2) -> v1.getHoraSalida().compareTo(v2.getHoraSalida()));
@@ -115,20 +116,25 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
             boolean encArribo = false;
             boolean encSalida = false;
 
-            for (Vuelo vuelo : vuelosArribo) {
+            List<Vuelo> vuelosOrdenados = this.getVuelosEnlazados(vuelosArribo, vuelosSalida);
+
+            int index = 0;
+            for (Vuelo vuelo : vuelosOrdenados) {
 
                 tablaArribos = new PdfPTable(3);
                 tablaSalidas = new PdfPTable(3);
                 
-                Vuelo vueloSal = buscarVueloEnlazado(vuelo, vuelosSalida);
-                encArribo = crearSubColumnas(encArribo, encSalida, cel, tablaArribos);
+                if(indexPar(index)){
+                    encArribo = crearSubColumnas(encArribo, encSalida, cel, tablaArribos);
+                    tablaDia.addCell(cargarVuelos(vuelo, tablaArribos, cel));
+                }
                 
-                tablaDia.addCell(cargarVuelos(vuelo, tablaArribos, cel));
-                encSalida = crearSubColumnas(encArribo, encSalida, cel, tablaSalidas);
+                if(!indexPar(index)){
+                    encSalida = crearSubColumnas(encArribo, encSalida, cel, tablaSalidas);
+                    tablaDia.addCell(cargarVuelos(vuelo, tablaSalidas, cel));
+                }
                 
-                tablaDia.addCell(cargarVuelos(vueloSal, tablaSalidas, cel));
-                vuelosSalida.remove(vueloSal);
-
+                index++;
             }
 
             doc.add(tablaDia);
@@ -140,6 +146,78 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
         }
     }
 
+    private boolean indexPar(int index){
+        return index % 2 == 0;
+    }
+
+    private List<Vuelo> getVuelosEnlazados(List<Vuelo> vuelosArribo, List<Vuelo> vuelosSalida) {
+
+        List<Vuelo> list = new ArrayList<Vuelo>();
+        Vuelo vueloArr = null;
+        Vuelo vueloSal = null;   
+        List<Vuelo> listVuelosGuardados = new ArrayList<Vuelo>();
+        primerBucle:
+        for (int i = 0; i < vuelosArribo.size(); i++) {
+            vueloArr = vuelosArribo.get(i);
+           
+            for (int j = 0; j < vuelosSalida.size(); j++) {
+                vueloSal = vuelosSalida.get(j);
+                // Si el vuelo ya fue leido y cargado a la planilla continua con el siguiente
+                if(comprobarVueloGuardados(vueloSal, listVuelosGuardados)) continue;    
+                
+                if(validarPosicionLista(i, j)){
+                    // si coincide la posicion de los vuelos en las listas, y el vueloSalida sale antes que el vueloArribo
+                    if(vueloSal.getHoraSalida().isBefore(vueloArr.getHoraArribo())) {
+                        list.add(null);
+                        list.add(vueloSal);
+                        listVuelosGuardados.add(vueloSal);
+                        continue;
+                    }
+                } else {
+                    // si la posicion de los vuelos en las listas no coinciden y el vueloSalida sale antes que el vueloArribo
+                    if(vueloSal.getHoraSalida().isBefore(vueloArr.getHoraArribo())) {
+                        list.add(null);
+                        list.add(vueloSal);
+                        listVuelosGuardados.add(vueloSal);
+                        continue;
+                    }
+                }
+                // si no es la misma compania salta el vueloSalida    
+                if(!validarCompania(vueloArr, vueloSal)) continue;
+
+                if(validarVuelosCorrelativos(vueloArr, vueloSal)){
+                    list.add(vueloArr);
+                    list.add(vueloSal);
+                    listVuelosGuardados.add(vueloSal);
+                    continue primerBucle;
+                } 
+   
+            }
+            // Si no se enlazo la salida correspondiente es porque el vuelo arribado debe pernoctar
+            list.add(vueloArr);
+            list.add(null);
+        }
+
+        return list;
+    }
+
+    private boolean comprobarVueloGuardados(Vuelo vuelo, List<Vuelo> list){
+        return list.stream().anyMatch( vueloLista -> vueloLista.getNroVuelo().equals(vuelo.getNroVuelo()));
+    }
+
+    private boolean validarCompania(Vuelo vueloArr, Vuelo vueloSal){
+        return vueloArr.getCompania().equals(vueloSal.getCompania());
+    }
+    private boolean validarVuelosCorrelativos(Vuelo vueloArr, Vuelo vueloSal){
+        int nroArr = vueloArr.getNro();
+        int nroSal = vueloSal.getNro();
+        return nroArr + 1 == nroSal || nroArr - 1 == nroSal;
+    }
+
+    private boolean validarPosicionLista(int i, int j){
+        return i == 0 && j == 0;
+    }
+    
     private PdfPCell cargarVuelos(Vuelo vuelo, PdfPTable tabla, PdfPCell cel) {
         
         Font font = FontFactory.getFont(FontFactory.HELVETICA, 8);
@@ -170,24 +248,12 @@ public class ImprimirProgramacionPDF extends AbstractPdfView {
                 tabla.addCell(cel);
             }
         }
-
         cel.setBackgroundColor(Color.WHITE);
         PdfPCell celVuelo = new PdfPCell(tabla);
 
         return celVuelo;
     }
 
-    private Vuelo buscarVueloEnlazado(Vuelo vuelo, List<Vuelo> vuelosSalida) {
-        
-        for (Vuelo vueloSal : vuelosSalida) {
-            if(vuelo.getHoraArribo().isAfter(vueloSal.getHoraSalida())) continue;
-
-            if(!vuelo.getCompania().equals(vueloSal.getCompania())) continue;
-            
-            return vueloSal;
-        }
-        return null;
-    }
 
     private void crearColumnas(Document doc, PdfPCell cel, PdfPTable columna) {
 

@@ -88,4 +88,9 @@ public abstract class AbstractVuelo implements Serializable{
         String arr[] = this.nroVuelo.split(" ");
         return arr[0];
     }
+
+    public int getNro(){
+        String arr[] = this.nroVuelo.split(" ");
+        return Integer.parseInt(arr[1]);
+    }
 }
