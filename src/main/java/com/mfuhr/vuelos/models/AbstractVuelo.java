@@ -20,6 +20,7 @@ import com.mfuhr.vuelos.utils.Posicion;
 import com.mfuhr.vuelos.utils.Puerta;
 import com.mfuhr.vuelos.utils.TipoVuelo;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
@@ -36,6 +37,9 @@ public abstract class AbstractVuelo implements Serializable{
 
     @NotBlank(message = "Debe indicar un nro de vuelo")
     private String nroVuelo;
+
+    @Transient
+    private String equipo;
 
     @Enumerated(value = EnumType.STRING)
     private TipoVuelo tipoVuelo;

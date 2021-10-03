@@ -103,20 +103,22 @@ public class ImportarVueloServiceImpl implements ImportarVueloService {
                                         .get();
                                         
             vueloImportado.setTipoVuelo(tipoVuelo);
-
+            String equipo;
             try {
-                String equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
+                equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
                 if(equipo.contains("330")){
                     vueloImportado.setGranPorte(true);
                 }
             } catch (Exception e){
                 
-                Integer equipo = (int) row.getCell(Celda.EQUIPO.getNro()).getNumericCellValue();
-                if(equipo == 330){
+                Integer equipoInt = (int) row.getCell(Celda.EQUIPO.getNro()).getNumericCellValue();
+                if(equipoInt == 330){
                     vueloImportado.setGranPorte(true);
                 }
+                equipo = equipoInt.toString();
             }
             
+            vueloImportado.setEquipo(equipo);
             
             int i = 6;
             for (Dia dia : Dia.values()) {
@@ -213,6 +215,7 @@ public class ImportarVueloServiceImpl implements ImportarVueloService {
                     vuelo.setOrigen(vueloImportado.getOrigen());
                     vuelo.setDestino(vueloImportado.getDestino());
                     vuelo.setTipoVuelo(vueloImportado.getTipoVuelo());
+                    vuelo.setGranPorte(vueloImportado.getGranPorte());
                     vuelo.setFecha(fecha);
                     vuelo.setImportado(importado);
 

@@ -3,6 +3,7 @@
         <tr>
             <th rowspan="2" class="align-middle text-center" >Nº Vuelo</th>
             <th rowspan="2" class="align-middle text-center">Tipo de vuelo</th>
+            <th rowspan="2" class="align-middle text-center">Equipo</th>
             <th colspan="7" class="align-middle text-center">Días que opera</th>
             <th rowspan="2" class="align-middle text-center">Desde</th>
             <th rowspan="2" class="align-middle text-center">Hasta</th>
@@ -25,6 +26,7 @@
         <tr th:each="vuelo : ${vuelos}">
             <td class="text-center" th:text="${vuelo.nroVuelo}"></td>
             <td class="text-center" th:text="${vuelo.tipoVuelo.name}"></td>
+            <td class="text-center" th:text="${vuelo.equipo}"></td>
             <span th:each="dia : ${vuelo.dias}">
                 <td class="text-center" th:if="${dia != null}" th:text="${'X'}"></td>
                 <td class="text-center" th:if="${dia == null}" th:text="${''}"></td>
