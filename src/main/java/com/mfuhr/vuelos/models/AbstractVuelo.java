@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -20,7 +21,6 @@ import com.mfuhr.vuelos.utils.Posicion;
 import com.mfuhr.vuelos.utils.Puerta;
 import com.mfuhr.vuelos.utils.TipoVuelo;
 
-import org.springframework.data.annotation.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
