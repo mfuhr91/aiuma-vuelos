@@ -106,7 +106,7 @@ public class ImportarVueloServiceImpl implements ImportarVueloService {
             String equipo;
             try {
                 equipo = row.getCell(Celda.EQUIPO.getNro()).getStringCellValue();
-                if(equipo.contains("330")){
+                if(equipo.contains("A33") || equipo.contains("B78")){
                     vueloImportado.setGranPorte(true);
                 }
             } catch (Exception e){
