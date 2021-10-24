@@ -25,7 +25,7 @@
     <tbody>
         <tr th:each="vuelo : ${vuelos}">
             <td class="text-center" th:text="${vuelo.nroVuelo}"></td>
-            <td class="text-center" th:text="${vuelo.tipoVuelo.name}"></td>
+            <td class="text-center" th:text="${vuelo.tipoVuelo.valor}"></td>
             <td class="text-center" th:text="${vuelo.equipo}"></td>
             <span th:each="dia : ${vuelo.dias}">
                 <td class="text-center" th:if="${dia != null}" th:text="${'X'}"></td>

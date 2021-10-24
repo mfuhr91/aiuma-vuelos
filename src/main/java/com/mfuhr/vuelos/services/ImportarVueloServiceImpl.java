@@ -98,7 +98,7 @@ public class ImportarVueloServiceImpl implements ImportarVueloService {
             vueloImportado.setNroVuelo(nroVueloString);
 
             TipoVuelo tipoVuelo = Arrays.stream(TipoVuelo.values())
-                                        .filter( tipo -> tipo.name().equalsIgnoreCase(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue().trim()))
+                                        .filter( tipo -> tipo.getValor().equalsIgnoreCase(row.getCell(Celda.TIPO_VUELO.getNro()).getStringCellValue().trim()))
                                         .findFirst()
                                         .get();
                                         

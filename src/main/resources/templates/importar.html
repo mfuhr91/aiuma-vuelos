@@ -6,7 +6,7 @@
 <body>
     <header th:replace="template :: header"></header>
     <div class="main-container container animate__animated animate__fadeIn">
-        <div id="card-programacion" class="card w-75">
+        <div id="card-programacion" class="card">
             <h5 class="card-header bg-primary text-light" th:text="${titulo}"></h5>
             <div class="card-body">
                 <div class="row mt-4">
@@ -40,7 +40,7 @@
                 <button class="btn btn-primary mx-3 mb-3" th:disabled="!${vuelos}" type="submit">Guardar</button>
             </form>
         </div>
-        <div class="card w-75 mt-4">
+        <div class="card mt-4">
             <h5 class="card-header bg-primary text-light" th:text="${tituloLista}"></h5>
             <table th:if="${importaciones}" class="table lista-imports table-sm table-bordered table-hovered m-2">
                 <thead >
@@ -89,6 +89,16 @@
                 </div>
                 <div class="modal-body">
                     <img type="image/png" th:src="@{/img/ejemplo.png}" width="100%" />
+                </div>
+                <div>
+                    <h5 class="m-3">Tipos de vuelos permitidos:</h5>
+                    <ul class="list-group w-25 m-3">
+                        <li class="list-group-item">REGULAR</li>
+                        <li class="list-group-item">NO REGULAR</li>
+                        <li class="list-group-item">ESPECIAL</li>
+                        <li class="list-group-item">PRIVADO</li>
+                        <li class="list-group-item">CHARTER</li>
+                      </ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

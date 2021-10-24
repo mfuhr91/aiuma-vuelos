@@ -76,7 +76,7 @@ public class VuelosController {
             this.nombreArchivo = file.getOriginalFilename();
             this.vueloImportadoList = this.importarService.leerExcel(file);
         } catch (Exception e) {
-            log.error("error al leer archivo");
+            log.error("error al leer archivo, ERROR:", e);
             flash.addFlashAttribute("warning"," Debe seleccionar un archivo para importar!");
             System.out.println(e);
             return "redirect:/vuelos/importar";
